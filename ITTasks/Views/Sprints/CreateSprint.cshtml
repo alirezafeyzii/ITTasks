@@ -1,0 +1,88 @@
+﻿@using ITTasks.Models.DTOS.Sprints;
+@model CreateSprintDto
+
+
+@section Styles{
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />
+}
+<div class="row">
+<div class="col-2" style="margin-right:50px">
+	<form asp-action="CreateSprint" asp-controller="Sprints" method="post">
+		<div class="mb-3">
+			<div class="mb-3">
+				<label asp-for="Title" class="form-label">عنوان اسپرینت</label>
+				<input asp-for="Title" class="form-control">
+				<span asp-validation-for="Title"></span>
+			</div>
+			<div class="mb-3">
+					<label asp-for="StartDate" class="form-label">تاریخ شروع اسپرینت:</label>
+				<input id="start-date" dir="auto" class="form-control" placeholder="@Html.DisplayNameFor(model => model.StartDate)" autocomplete="off">
+				<input asp-for="StartDate" hidden>
+				<span asp-validation-for="StartDate" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+					<label asp-for="EndDate" class="form-label">تاریخ پایان اسپرینت:</label>
+				<input id="end-date" dir="auto" class="form-control" placeholder="@Html.DisplayNameFor(model => model.EndDate)" autocomplete="off">
+				<input asp-for="EndDate" hidden>
+				<span asp-validation-for="EndDate" class="text-danger small"></span>
+			</div>
+			<input type="submit" class="btn btn-outline-success" value="ثبت" />
+				<span class="text-danger">@ViewBag.ErrorMessage</span>
+				<span class="text-danger">@ViewBag.Successful</span>
+		</div>
+	</form>
+</div>
+
+
+
+
+@section Scripts {
+
+	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
+	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript" src="~/lib/data-tables/datatables.min.js"></script>
+	<script type="text/javascript" src="~/assets/js/datatable.js"></script>
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+
+
+	<script type="text/javascript">
+
+		$(document).ready(function () {
+
+			var pd = $("#start-date").persianDatepicker({
+				observer: false,
+				format: 'YYYY/MM/DD',
+				altField: '#StartDate',
+				altFormat: 'X',
+				toolbox: {
+					calendarSwitch: {
+						enabled: false
+					}
+				}
+			});
+
+			pd.setDate('@Model.StartDate');
+
+			var sdt = $("#end-date").persianDatepicker({
+				observer: false,
+				format: 'YYYY/MM/DD',
+				altField: '#EndDate',
+				altFormat: 'X',
+				toolbox: {
+					calendarSwitch: {
+						enabled: false
+					}
+				}
+			});
+
+			sdt.setDate('@Model.EndDate');
+
+		});
+	</script>
+}

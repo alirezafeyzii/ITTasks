@@ -1,0 +1,30 @@
+﻿@using ITTasks.Models.DTOS.Users;
+@model List<UserDto>
+
+
+
+
+
+<div class="container mt-3">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>نام کاربر </th>
+				<th>وضعیت</th>
+				<th>تاریخ ساخت</th>
+				<th>ساعت ساخت</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var user in Model)
+			{
+				<tr>
+					<td>@user.FullName</td>
+					<td>@user.IsActive</td>
+					<td>@user.CreatedTime.ToShortDateString()</td>
+					<td>@user.CreatedTime.TimeOfDay</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

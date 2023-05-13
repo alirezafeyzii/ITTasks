@@ -1,0 +1,13 @@
+﻿@model ITTasks.Models.DTOS.Users.CreateUserDto
+
+<form asp-action="CreateUser" asp-controller="User" method="post">
+	<div class="mb-3">
+		<div class="mb-3 col-3">
+			<label asp-for="FullName" class="form-label">نام کاربر </label>
+			<input asp-for="FullName" class="form-control">
+			<span asp-validation-for="FullName"></span>
+		</div>
+		<input type="submit" class="btn btn-outline-success" value="ثبت" />
+		@ViewBag.Successful
+		@ViewBag.ErrorMessage
+</form>

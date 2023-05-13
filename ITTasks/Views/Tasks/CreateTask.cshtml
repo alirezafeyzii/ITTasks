@@ -1,0 +1,333 @@
+﻿@using ITTasks.Infrastructure.Helper;
+@using ITTasks.Models.DTOS.Tasks;
+@model ITTaskCreateDto
+
+@section Styles{
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />
+}
+<style>
+	td {
+		width: 30ch;
+		max-width: 30ch;
+		word-wrap: break-word;
+	}
+	/* The Modal (background) */
+	.modal {
+		display: none; /* Hidden by default */
+		position: fixed; /* Stay in place */
+		z-index: 1; /* Sit on top */
+		padding-top: 100px; /* Location of the box */
+		left: 0;
+		top: 0;
+		width: 100%; /* Full width */
+		height: 100%; /* Full height */
+		overflow: auto; /* Enable scroll if needed */
+		background-color: rgb(0,0,0); /* Fallback color */
+		background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+
+	/* Modal Content */
+	.modal-content {
+		background-color: #fefefe;
+		margin: auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 80%;
+	}
+
+	/* The Close Button */
+	.close {
+		color: #aaaaaa;
+		float: right;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+		.close:hover,
+		.close:focus {
+			color: #000;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+	.paging-item {
+		padding: 2px;
+		width: 40px;
+		height: 40px;
+		aspect-ratio: 1/1;
+	}
+
+	.overflow-dotted {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+</style>
+<div class="row">
+	<div class="col-2" style="margin-right:50px">
+		<form asp-action="CreateTask" asp-controller="Tasks" method="post" style="display:inline">
+			<div class="mb-3">
+				<label asp-for="SprintId" class="form-label">اسپرینت :</label>
+				<br />
+				<select class="form-select" asp-for="SprintId" asp-items="@(new SelectList(Model.Sprints.AsEnumerable(),"Id","Title",Model.SprintId))">
+					<option class="dropdown-item" selected disabled>...انتخاب اسپرینت...</option>
+				</select>
+				<span asp-validation-for="TaskTypeId" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="UserId" class="form-label">نام فرد انجام دهنده:</label>
+				<br />
+				<select class="form-select" asp-for="UserId" asp-items="@(new SelectList(Model.Users.AsEnumerable(),"Id","FullName",Model.UserId))">
+					<option class="dropdown-item" selected disabled>...انتخاب کاربر...</option>
+				</select>
+				<span asp-validation-for="UserId" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="TaskTypeId" class="form-label">نوع تسک :</label>
+				<br />
+				<select class="form-select" asp-for="TaskTypeId" asp-items="@(new SelectList(Model.ITTaskTypes.AsEnumerable(),"Id","Title",Model.TaskTypeId))">
+					<option class="dropdown-item" selected disabled>...انتخاب نوع تسک...</option>
+				</select>
+				<span asp-validation-for="TaskTypeId" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="HourAmount" class="form-label">مقدار ساعت انجام کار:</label>
+				<input asp-for="HourAmount" type="number" min="0.25" step="0.25" value="0.25" class="form-control">
+				<span asp-validation-for="HourAmount" class="text-danger small"></span>
+			</div>
+
+			<div class="mb-3">
+				<input id="expiration-date" dir="auto" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Date)" autocomplete="off">
+				<input asp-for="Date" hidden>
+				<label asp-for="Date" class="form-label">تاریخ:</label>
+				<span asp-validation-for="Date" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Description" class="form-label">توضیحات:</label>
+				@*<input asp-for="Description" type="" class="form-control">*@
+				<textarea asp-for="Description" class="form-control"></textarea>
+				<span asp-validation-for="Description" class="text-danger small"></span>
+			</div>
+			<input type="submit" class="btn btn-success" value="ثبت" />
+			<br />
+			<span class="text-success">@ViewBag.SuccessfulMessage</span>
+			<span class="text-danger">@ViewBag.ErrorMessage</span>
+		</form>
+	</div>
+
+
+	<div class="col-8">
+		<div class="container mt-3 d-flex justify-content-center flex-wrap">
+			<h2>موردی برای نمایش وجود ندارد</h2>
+			@if (Model.ITTasks.Count != 0)
+			{
+				<table class="table data-table table-hover text-nowrap display col-12">
+					<thead>
+						<tr>
+							<th>شماره</th>
+							<th>نام کاربر </th>
+							<th>مقدار ساعت</th>
+							<th>تاریخ </th>
+							<th>نوع تسک</th>
+							<th>توضیحات</th>
+							<th>حذف</th>
+							@*<th>ویرایش</th>*@
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							var index = ((Model.pageInfo.CurrentPage - 1) * Model.pageInfo.ItemsPerPage) + 1;
+						}
+						@foreach (var task in Model.ITTasks)
+						{
+							<tr>
+								<td>
+									@(
+										index++
+										)
+								</td>
+								<td>@task.User.FullName</td>
+								<td>@task.HourAmount</td>
+								<td>@task.PersianDate</td>
+								<td>@task.TaskType.Title</td>
+								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
+								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task">حذف</button></td>
+							</tr>
+						}
+
+					</tbody>
+				</table>	
+				<div class="col-3"></div>
+				<div class="d-flex col-6 justify-content-center">
+					@Html.PageLinks(@Model.pageInfo, x => Url.Action("CreateTask",
+				new { pageNumber = x.ToString()}))
+				</div>
+				<div class="col-3 d-flex justify-content-end">
+					<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
+				</div>
+			}
+		</div>
+	</div>
+
+
+</div>
+
+
+
+
+@section Scripts {
+
+	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
+	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript" src="~/lib/data-tables/datatables.min.js"></script>
+	<script type="text/javascript" src="~/assets/js/datatable.js"></script>
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+	<script type="text/javascript">
+
+
+		$('#Date').keyup(function () {
+			var new_stuff = $(this).val();
+			new_stuff = new_stuff.replace(/[\n\r]+/g, ""); // clean out newlines, so we dont get dups!
+			var test = new_stuff.replace(/(.{10})/g, "$1\n"); // Here
+			$(this).val(test);
+		});
+
+		var taskToDeleteId = "";
+
+		$(document).ready(function () {
+
+			if ('@Model.UserAdded' == true) {
+				ShowAlert("آفرین", "کاربر با موفقیت اضافه شد", "success")
+			}
+
+
+			var pd = $("#expiration-date").persianDatepicker({
+				observer: false,
+				format: 'YYYY/MM/DD',
+				altField: '#Date',
+				altFormat: 'X',
+				toolbox: {
+					calendarSwitch: {
+						enabled: false
+					}
+				}
+			});
+
+			pd.setDate('@Model.Date');
+
+
+			$(".btn-delete-task").on("click",
+				function () {
+					taskToDeleteId = $(this).data("task-id");
+					DeleteSwalAlert()
+				});
+
+			$("#btn-delete-task").on("click", function () {
+
+				deleteTask();
+
+			});
+
+		});
+
+
+		function deleteTask() {
+
+
+			fetch("/Tasks/DeleteTask/" + taskToDeleteId, {
+				method: "DELETE", // or 'PUT'
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}).then((res) => res.json()).then((res) => {
+				console.log(res, 'res')
+				if (res.errorCode == 1) {
+					setTimeout(function () {
+						location.replace("https://localhost:7180/Tasks/CreateTask")
+					}, 2000)
+
+					DeleteAlert()
+
+				} else {
+					//ShowAlert('خطا', 'حذف این ایتم باخطا مواجه شد،لطفا بار دیگر تلاش کنید', 'error')
+					Swal.fire({
+						position: 'top',
+						icon: 'error',
+						title: 'خطا',
+						text: 'حذف ایتم باخطا مواجه شد،لطفا بار دیگر تلاش کنید',
+						showConfirmButton: false,
+						timer: 1700
+					})
+				}
+			})
+		}
+
+		function ShowAlert(title, message, type) {
+			Swal.fire({
+				icon: type,
+				title: title,
+				text: message
+			})
+		}
+
+		function DeleteSwalAlert() {
+			Swal.fire({
+				title: 'اخطار',
+				text: "ایا می خواهید این ایتم را حذف کنید؟",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'بله ،مطمئنم',
+				cancelButtonText: 'خیر'
+			}).then((result) => {
+				if (result.isConfirmed) {
+
+					deleteTask()
+					DeleteAlert()
+				}
+			})
+
+		}
+
+		function DeleteAlert() {
+			setTimeout(Swal.fire({
+				position: 'top',
+				icon: 'success',
+				text: 'با موفقیت انجام شد',
+				showConfirmButton: false,
+				timer: 1700
+			}), 2000)
+		}
+
+		function SubmitAlert(errorCode, errorMessage) {
+			if (errorCode == 0) {
+				Swal.fire({
+					position: 'top',
+					icon: 'success',
+					text: 'با موفقیت انجام شد',
+					showConfirmButton: false,
+					timer: 1700
+				})
+			}
+			else {
+				Swal.fire({
+					position: 'top',
+					icon: 'error',
+					title: 'خطا',
+					text: errorMessage,
+					showConfirmButton: false,
+					timer: 1700
+				})
+			}
+		}
+
+	</script>
+}

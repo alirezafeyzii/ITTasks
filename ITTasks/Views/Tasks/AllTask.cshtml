@@ -1,0 +1,213 @@
+﻿@using ITTasks.Infrastructure.Helper;
+@using ITTasks.Models.DTOS.Tasks;
+@model List<ITTaskDto>
+
+
+<style>
+	td {
+		width: 30ch;
+		max-width: 30ch;
+		word-wrap: break-word;
+	}
+
+	.overflow-dotted {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+</style>
+<div class="row">
+	<div class="col-2" style="margin-right:50px">
+	</div>
+	<div class="col-8">
+		<div class="container mt-3 d-flex justify-content-center flex-wrap">
+			<h2>موردی برای نمایش وجود ندارد</h2>
+			@if (Model.Count != 0)
+			{
+				<table class="table data-table table-hover text-nowrap display col-12">
+					<thead>
+						<tr>
+							<th>شماره</th>
+							<th>نام کاربر </th>
+							<th>مقدار ساعت</th>
+							<th>تاریخ </th>
+							<th>نوع تسک</th>
+							<th>توضیحات</th>
+							<th>حذف</th>
+							@*<th>ویرایش</th>*@
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							var index = ((Model.FirstOrDefault().PageInfo.CurrentPage - 1) * Model.FirstOrDefault().PageInfo.ItemsPerPage) + 1;
+						}
+						@foreach (var task in Model)
+						{
+							<tr>
+								<td>
+									@(
+										index++
+										)
+								</td>
+								<td>@task.User.FullName</td>
+								<td>@task.HourAmount</td>
+								<td>@task.PersianDate</td>
+								<td>@task.TaskType.Title</td>
+								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
+								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task">حذف</button></td>
+							</tr>
+						}
+
+					</tbody>
+				</table>
+
+				<div class="col-3"></div>
+				<div class="d-flex col-6 justify-content-center">
+					@Html.PageLinks(@Model.FirstOrDefault().PageInfo, x => Url.Action("AllTask",
+				new { pageNumber = x.ToString()}))
+				</div>
+				<div class="col-3 d-flex justify-content-end">
+					<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
+				</div>
+			}
+		</div>
+
+
+		@section Scripts {
+
+			<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
+			<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+			<script type="text/javascript" src="~/lib/data-tables/datatables.min.js"></script>
+			<script type="text/javascript" src="~/assets/js/datatable.js"></script>
+			@{
+				await Html.RenderPartialAsync("_ValidationScriptsPartial");
+			}
+
+			<script type="text/javascript">
+
+
+				$('#Date').keyup(function () {
+					var new_stuff = $(this).val();
+					new_stuff = new_stuff.replace(/[\n\r]+/g, ""); // clean out newlines, so we dont get dups!
+					var test = new_stuff.replace(/(.{10})/g, "$1\n"); // Here
+					$(this).val(test);
+				});
+
+				var taskToDeleteId = "";
+
+				$(document).ready(function () {
+
+					if ('@Model' == true) {
+						ShowAlert("آفرین", "کاربر با موفقیت اضافه شد", "success")
+					}
+
+
+					$(".btn-delete-task").on("click",
+						function () {
+							taskToDeleteId = $(this).data("task-id");
+							DeleteSwalAlert()
+						});
+
+					$("#btn-delete-task").on("click", function () {
+
+						deleteTask();
+
+					});
+
+				});
+
+
+				function deleteTask() {
+
+
+					fetch("/Tasks/DeleteTask/" + taskToDeleteId, {
+						method: "DELETE", // or 'PUT'
+						headers: {
+							"Content-Type": "application/json",
+						},
+					}).then((res) => res.json()).then((res) => {
+						console.log(res, 'res')
+						if (res.errorCode == 1) {
+							setTimeout(function () {
+								location.replace("https://localhost:7180/Tasks/AllTask")
+							}, 2000)
+
+							DeleteAlert()
+
+						} else {
+							//ShowAlert('خطا', 'حذف این ایتم باخطا مواجه شد،لطفا بار دیگر تلاش کنید', 'error')
+							Swal.fire({
+								position: 'top',
+								icon: 'error',
+								title: 'خطا',
+								text: 'حذف ایتم باخطا مواجه شد،لطفا بار دیگر تلاش کنید',
+								showConfirmButton: false,
+								timer: 1700
+							})
+						}
+					})
+				}
+
+				function ShowAlert(title, message, type) {
+					Swal.fire({
+						icon: type,
+						title: title,
+						text: message
+					})
+				}
+
+				function DeleteSwalAlert() {
+					Swal.fire({
+						title: 'اخطار',
+						text: "ایا می خواهید این ایتم را حذف کنید؟",
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'بله ،مطمئنم',
+						cancelButtonText: 'خیر'
+					}).then((result) => {
+						if (result.isConfirmed) {
+
+							deleteTask()
+							DeleteAlert()
+						}
+					})
+
+				}
+
+				function DeleteAlert() {
+					setTimeout(Swal.fire({
+						position: 'top',
+						icon: 'success',
+						text: 'با موفقیت انجام شد',
+						showConfirmButton: false,
+						timer: 1700
+					}), 2000)
+				}
+
+				function SubmitAlert(errorCode, errorMessage) {
+					if (errorCode == 0) {
+						Swal.fire({
+							position: 'top',
+							icon: 'success',
+							text: 'با موفقیت انجام شد',
+							showConfirmButton: false,
+							timer: 1700
+						})
+					}
+					else {
+						Swal.fire({
+							position: 'top',
+							icon: 'error',
+							title: 'خطا',
+							text: errorMessage,
+							showConfirmButton: false,
+							timer: 1700
+						})
+					}
+				}
+
+			</script>
+		}
