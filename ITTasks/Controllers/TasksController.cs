@@ -14,6 +14,7 @@ using OfficeOpenXml;
 using System.Drawing;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 using ITTasks.Services.Sprints;
+using ITTasks.Models.DTOS.Tasks.TasksType;
 
 namespace ITTasks.Controllers
 {
@@ -117,7 +118,7 @@ namespace ITTasks.Controllers
 			});
         }
 
-        [HttpDelete("/Tasks/DeleteTask/{id}")]
+        [HttpPost("/Tasks/DeleteTask/{id}")]
         public async Task<IActionResult> DeleteTask([FromRoute] string id)
         {
             var taskFromService = await _taskService.DeleteTaskAsync(Guid.Parse(id));
@@ -207,6 +208,23 @@ namespace ITTasks.Controllers
 
 			return View(allTasks);
 		}
+		public async Task<IActionResult> CreateTaskType()
+		{
+			return View();
+		}
+		[HttpPost]
+		public async Task<IActionResult> CreateTaskType(ITTaskTypeCreateDto taskType)
+		{
+			var taskTYpeFromService = await _taskTypeService.CreateAsync(taskType);
+			if(taskTYpeFromService.ErrorCode != (int)ErrorCodes.NoError)
+			{
+				ViewBag.ErrorMessage = taskTYpeFromService.ErrorMessage;
+				return View(taskType);
+			}
 
-    }
+			ViewBag.SuccessfulMessage = "با موفقیت انجام شد";
+			return View(taskType);
+		}
+
+	}
 }

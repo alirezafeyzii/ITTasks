@@ -142,5 +142,55 @@ namespace ITTasks.Services.Users
 				};
 			}
 		}
+
+		public async Task<UserDto> UpdatUserAsync(UserDto user)
+		{
+			try
+			{
+				if(user == null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.NullObjectError,
+						ErrorMessage = ErrorMessages.NullInputParameters
+					};
+				}
+
+				if (user.FullName == null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.UserFullNameError,
+						ErrorMessage = ErrorMessages.UserFullNameError
+					};
+				}
+
+				var userFromRepo = await _userRepository.UpdateUserAsync(user);
+				if(userFromRepo == null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.DatabaseError,
+						ErrorMessage = ErrorMessages.DatabaseError
+					};
+				}
+
+				return new UserDto
+				{
+					FullName = userFromRepo.FullName,
+					Id = userFromRepo.Id,
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
+				};
+			}
+			catch (Exception)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.DatabaseError,
+					ErrorMessage = ErrorMessages.DatabaseError
+				};
+			}
+		}
 	}
 }

@@ -7,5 +7,6 @@
         public bool IsActive { get; set; }
         public DateTime CreatedTime { get; set; }
         public DateTime UpdatedTime { get; set; }
+        public List<UserDto> Users { get; set; }
     }
 }

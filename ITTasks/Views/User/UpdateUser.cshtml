@@ -1,0 +1,30 @@
+﻿@using ITTasks.Models.DTOS.Users;
+@model UserDto
+
+
+
+
+
+<div class="row">
+	<div class="col-2" style="margin-right:50px">
+		<form asp-action="UpdateUser" asp-controller="User" method="post" style="display:inline">
+			<div class="mb-3">
+				<label asp-for="Id" class="form-label">نام فرد :</label>
+				<br />
+				<select class="form-select" asp-for="Id" asp-items="@(new SelectList(Model.Users.AsEnumerable(),"Id","FullName",Model.Id))">
+					<option class="dropdown-item" selected disabled>...انتخاب کاربر...</option>
+				</select>
+				<span asp-validation-for="Id" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="FullName" class="form-label">نام جدید:</label>
+				<input asp-for="FullName" class="form-control"/>
+				<span asp-validation-for="FullName" class="text-danger small"></span>
+			</div>
+			<input type="submit" class="btn btn-success" value="ثبت" />
+			<br />
+			<span class="text-success">@ViewBag.SuccessfulMessage</span>
+			<span class="text-danger">@ViewBag.ErrorMessage</span>
+		</form>
+	</div>
+</div>

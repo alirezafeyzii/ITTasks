@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<EnableMSDeployAppOffline>true</EnableMSDeployAppOffline>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,5 +26,4 @@
   <ItemGroup>
     <Folder Include="DataLayer\Database\" />
   </ItemGroup>
-
 </Project>

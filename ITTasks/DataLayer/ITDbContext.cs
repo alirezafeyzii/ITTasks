@@ -14,6 +14,6 @@ namespace ITTasks.DataLayer
         public DbSet<Sprint> Sprints { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //    => optionsBuilder.UseSqlite(@"C:\Users\alirezafeyzi\source\repos\ITTasks\ITTasks\DataLayer\Database\ITTaskDb.db");
-	}
+        //    => optionsBuilder.UseSqlite(@"Data Source = ittask.db");
+    }
 }

@@ -1,0 +1,23 @@
+﻿@using ITTasks.Models.DTOS.Tasks.TasksType;
+@model ITTaskTypeCreateDto
+
+<div class="row">
+	<div class="col-2" style="margin-right:50px">
+		<form asp-action="CreateTaskType" asp-controller="Tasks" method="post" style="display:inline">
+			<div class="mb-3">
+				<label asp-for="Title" class="form-label">عنوان نوع تسک:</label>
+				@*<input asp-for="Description" type="" class="form-control">*@
+				<input asp-for="Title" class="form-control"/>
+				<span asp-validation-for="Title" class="text-danger small"></span>
+			</div>
+			<input type="submit" class="btn btn-success" value="ثبت" />
+			<br />
+			<span class="text-success">@ViewBag.SuccessfulMessage</span>
+			<span class="text-danger">@ViewBag.ErrorMessage</span>
+		</form>
+	</div>
+
+
+
+</div>
+
