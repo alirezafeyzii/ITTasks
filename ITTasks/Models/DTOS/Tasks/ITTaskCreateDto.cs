@@ -13,7 +13,7 @@ namespace ITTasks.Models.DTOS.Tasks
         [Required(ErrorMessage = "وارد کردن نام شخص انجام دهنده الزامی است")]
         public string UserId { get; set; }
         [Required(ErrorMessage = "وارد کردن مقدار ساعت کار الزامی است")]
-        public float HourAmount { get; set; }
+		public float HourAmount { get; set; }
         [Display(Name = "تاریخ")]
         public long Date { get; set; }
         [Required(ErrorMessage = "وارد کردن توضیحات الزامی است")]

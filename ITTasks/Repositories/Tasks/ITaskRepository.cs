@@ -11,5 +11,7 @@ namespace ITTasks.Repositories.Tasks
         public Task<ITTask> CreateTaskAsync(ITTaskCreateDto task, DateTime createdTime);
         public Task<bool> DeleteTaskAsync(Guid id);
         public Task<List<ITTask>> GetAllTaskWithOutPaging();
+        public Task<ITTask> UpdateTaskAsync(ITTaskUpdateDto task, DateTime modifiedDate);
+        public Task<ITTask> GetTaskByIdAsync(Guid id);
     }
 }
