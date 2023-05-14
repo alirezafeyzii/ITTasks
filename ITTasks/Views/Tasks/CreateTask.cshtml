@@ -136,10 +136,11 @@
 							<th>نام کاربر </th>
 							<th>مقدار ساعت</th>
 							<th>تاریخ </th>
+							<th>اسپرینت</th>
 							<th>نوع تسک</th>
 							<th>توضیحات</th>
 							<th>حذف</th>
-							@*<th>ویرایش</th>*@
+							<th>ویرایش</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -157,9 +158,11 @@
 								<td>@task.User.FullName</td>
 								<td>@task.HourAmount</td>
 								<td>@task.PersianDate</td>
+								<td>@task.Sprint.Title</td>
 								<td>@task.TaskType.Title</td>
 								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
 								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task">حذف</button></td>
+								<td><a href="/Tasks/UpdateTask?id=@task.Id"><button class="btn btn-info">ویرایش</button></a></td>
 							</tr>
 						}
 
@@ -275,6 +278,7 @@
 				}
 			})
 		}
+
 
 		function ShowAlert(title, message, type) {
 			Swal.fire({

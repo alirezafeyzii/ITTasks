@@ -10,5 +10,7 @@ namespace ITTasks.Services.Tasks
         public Task<List<ITTaskDto>> GetAllTasksAsync(TaskParameters param);
         public Task<bool> DeleteTaskAsync(Guid id);
         public Task<List<ITTaskDto>> GetAllWithOutPaging();
+        public Task<ITTaskDto> UpdateTaskAsync(ITTaskUpdateDto task);
+        public Task<ITTaskDto> GetTaskByIdAsync(Guid id);
     }
 }
