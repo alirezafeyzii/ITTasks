@@ -98,8 +98,6 @@ namespace ITTasks.Controllers
 
 			ViewBag.SuccessfulMessage = "با موفقیت انجام شد";
 
-<<<<<<< HEAD
-
 			//return View(new ITTaskCreateDto
 			//         {
 			//             UserId = taskFromService.UserId.ToString(),
@@ -120,30 +118,8 @@ namespace ITTasks.Controllers
 			//});
 
 			return RedirectToAction("CreateTask");
-        }
-=======
-			var model = new ITTaskCreateDto
-			{
-				UserId = taskFromService.UserId.ToString(),
-				TaskDateTime = taskFromService.Date,
-				Description = taskFromService.Description,
-				FullName = taskFromService.User.FullName,
-				HourAmount = taskFromService.HourAmount,
-				Users = usersGroup,
-				ITTasks = allTasks,
-				PersianDate = DateTimeExtention.ToPersianWithOutTime(taskFromService.Date),
-				ITTaskTypes = allTaskTypes,
-				Title = taskFromService.TaskType.Title,
-				ErrorMessage = taskFromService.TaskType.ErrorMessage,
-				ErrorCode = taskFromService.ErrorCode,
-				UserAdded = true,
-				pageInfo = allTasks.FirstOrDefault().PageInfo,
-				Sprints = allSprint
-			};
-
-			//return RedirectToAction("CreateTask");
-			return RedirectToAction("CreateTask");
 		}
+
 
 		[HttpPost("/Tasks/DeleteTask/{id}")]
 		public async Task<IActionResult> DeleteTask([FromRoute] string id)
@@ -156,7 +132,6 @@ namespace ITTasks.Controllers
 				ErrorMessage = "Error"
 			});
 		}
->>>>>>> 7f83baa764d4a37059694368f130beb7f3d30410
 
 		public async Task<IActionResult> ExcelAllTask()
 		{
@@ -304,7 +279,7 @@ namespace ITTasks.Controllers
 				return View();
 
 			var taskAfterModified = await _taskService.UpdateTaskAsync(task);
-			if(taskAfterModified.ErrorCode != (int)ErrorCodes.NoError)
+			if (taskAfterModified.ErrorCode != (int)ErrorCodes.NoError)
 			{
 				return View();
 			}
