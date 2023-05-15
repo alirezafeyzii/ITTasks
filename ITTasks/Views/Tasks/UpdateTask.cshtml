@@ -1,0 +1,94 @@
+﻿@using ITTasks.Models.DTOS.Tasks.GetAndUpdate;
+@model GetAndUpdateTaskDto
+
+<div class="row">
+	<div class="col-2" style="margin-right:50px">
+		<form asp-action="UpdateTask" asp-controller="Tasks" method="post" style="display:inline">
+			<input asp-for="Task.Id" value="@Model.Task.Id" hidden />
+			<div class="mb-3">
+				<label asp-for="Task.UserId" class="form-label">نام فرد انجام دهنده:</label>
+				<br />
+				<select class="form-select" asp-for="Task.UserId" asp-items="@(new SelectList(Model.Users.AsEnumerable(),"Id","FullName",Model.User.Id))">
+					<option class="dropdown-item" selected disabled>...انتخاب کاربر...</option>
+				</select>
+				<span asp-validation-for="Task.UserId" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Task.SprintId" class="form-label">اسپرینت:</label>
+				<br />
+				<select class="form-select" asp-for="Task.SprintId" asp-items="@(new SelectList(Model.Sprints.AsEnumerable(),"Id","Title",Model.Sprint.Id))">
+					<option class="dropdown-item" selected disabled>...انتخاب اسپرینت...</option>
+				</select>
+				<span asp-validation-for="Task.SprintId" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Task.TaskTypeId" class="form-label">نوع تسک:</label>
+				<br />
+				<select class="form-select" asp-for="Task.TaskTypeId" asp-items="@(new SelectList(Model.TaskTypes.AsEnumerable(),"Id","Title",Model.TaskType.Id))">
+					<option class="dropdown-item" selected disabled>...انتخاب نوع تسک...</option>
+				</select>
+				<span asp-validation-for="Task.TaskTypeId" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Task.Date" class="form-label">تاریخ:</label>
+				<input id="expiration-date" dir="auto" class="form-control" placeholder="@Html.DisplayNameFor(model => model.Task.Date)" autocomplete="off">
+				<input asp-for="Task.Date" hidden>
+				<span asp-validation-for="Task.Date" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Task.HourAmount" class="form-label">مقدار ساعت:</label>
+				<input asp-for="Task.HourAmount" type="number" step="0.25" min="0.25" class="form-control" />
+				<span asp-validation-for="Task.HourAmount" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Task.Description" class="form-label">توضیحات:</label>
+				<input asp-for="Task.Description" class="form-control" />
+				<span asp-validation-for="Task.Description" class="text-danger small"></span>
+			</div>
+			<input type="submit" class="btn btn-success" value="ثبت" />
+			<br />
+			<span class="text-success">@ViewBag.SuccessfulMessage</span>
+			<span class="text-danger">@ViewBag.ErrorMessage</span>
+		</form>
+	</div>
+
+</div>
+
+
+@section Scripts {
+
+	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
+	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="sweetalert2.min.js"></script>
+	<link rel="stylesheet" href="sweetalert2.min.css">
+		@*<script type="text/javascript" src="~/lib/data-tables/datatables.min.js"></script>
+	<script type="text/javascript" src="~/assets/js/datatable.js"></script>*@
+		@{
+			await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		}
+
+	<script type="text/javascript">
+
+		$(document).ready(function () {
+
+
+			var pd = $("#expiration-date").persianDatepicker({
+				observer: false,
+				format: 'YYYY/MM/DD',
+				altField: '#Task_Date',
+				altFormat: 'X',
+				toolbox: {
+					calendarSwitch: {
+						enabled: false
+					}
+				}
+			});
+
+			pd.setDate('@Model.Task.Date');
+
+
+		});
+
+	</script>
+}

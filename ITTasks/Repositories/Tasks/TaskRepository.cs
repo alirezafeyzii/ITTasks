@@ -65,9 +65,10 @@ namespace ITTasks.Repositories.Tasks
 			var taskCount = await _dbContext.Tasks.CountAsync();
 
 			var allTasks = await _dbContext.Tasks.
-				Include(t => t.User)
-				.Include(x => x.ITTaskType)
-				.OrderByDescending(x => x.Date)
+				Include(u => u.User)
+				.Include(t => t.ITTaskType)
+				.Include(sp => sp.Sprint)
+				.OrderByDescending(tsk => tsk.Date)
 				.Skip(param.PageSize
 				* (param.PageNumber - 1))
 				.Take(param.PageSize)
@@ -88,7 +89,50 @@ namespace ITTasks.Repositories.Tasks
 			return await _dbContext.Tasks
 				.Include(x => x.User)
 				.Include(x => x.ITTaskType)
+				.Include(x => x.Sprint)
 				.ToListAsync();
+		}
+
+		public async Task<ITTask> GetTaskByIdAsync(Guid id)
+		{
+			if (id == Guid.Empty)
+				return null;
+
+			return await _dbContext.Tasks
+				.Include(t => t.ITTaskType)
+				.Include(t => t.User)
+				.Include(t => t.Sprint)
+				.SingleOrDefaultAsync(t => t.Id == id);
+		}
+
+		public async Task<ITTask> UpdateTaskAsync(ITTaskUpdateDto task, DateTime modifiedDate)
+		{
+			if (task == null)
+				return null;
+
+			if (modifiedDate == DateTime.MinValue)
+				return null;
+
+			if (task.Id == Guid.Empty && task.SprintId == Guid.Empty && task.TaskTypeId == Guid.Empty)
+				return null;
+
+			var taskFromDb = await GetTaskByIdAsync(task.Id);
+			if (taskFromDb == null)
+				return null;
+
+			taskFromDb.SprintId = task.SprintId;
+			taskFromDb.ITTaskTypeId = task.TaskTypeId;
+			taskFromDb.HourAmount = task.HourAmount;
+			taskFromDb.Date = modifiedDate;
+			taskFromDb.Description = task.Description;
+
+			var taskAfterUpdated = _dbContext.Tasks.Update(taskFromDb);
+			if (taskAfterUpdated.Entity == null)
+				return null;
+
+			await _dbContext.SaveChangesAsync();
+
+			return taskAfterUpdated.Entity;
 		}
 	}
 }
