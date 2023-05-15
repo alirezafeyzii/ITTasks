@@ -7,11 +7,9 @@ using ITTasks.Models.Errors;
 using ITTasks.Models.Parameters;
 using ITTasks.Repositories;
 using ITTasks.Repositories.Tasks;
-<<<<<<< HEAD
 using ITTasks.Statics;
-=======
+
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
->>>>>>> 7f83baa764d4a37059694368f130beb7f3d30410
 
 namespace ITTasks.Services.Tasks
 {
@@ -204,9 +202,6 @@ namespace ITTasks.Services.Tasks
 
 			return taskGroup;
 		}
-<<<<<<< HEAD
-		
-=======
 
 		public async Task<ITTaskDto> GetTaskByIdAsync(Guid id)
 		{
@@ -339,6 +334,5 @@ namespace ITTasks.Services.Tasks
 
 		}
 
->>>>>>> 7f83baa764d4a37059694368f130beb7f3d30410
 	}
 }
