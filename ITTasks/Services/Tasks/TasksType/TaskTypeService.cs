@@ -16,18 +16,39 @@ namespace ITTasks.Services.Tasks.TasksType
 
         public async Task<ITTaskTypeDto> CreateAsync(ITTaskTypeCreateDto taskType)
 		{
-			if(taskType.Title == null)
+			try
 			{
+				if (taskType.Title == null)
+				{
+					return new ITTaskTypeDto
+					{
+						ErrorCode = (int)ErrorCodes.NullObjectError,
+						ErrorMessage = ErrorMessages.NullInputParameters
+					};
+				}
+
+				var taskTypeFromRepo = await _taskTypeRepository.CreateAsync(taskType);
+
+				if (taskTypeFromRepo == null)
+				{
+					return new ITTaskTypeDto
+					{
+						ErrorCode = (int)ErrorCodes.ServerError,
+						ErrorMessage = ErrorMessages.ServerError
+					};
+				}
+
 				return new ITTaskTypeDto
 				{
-					ErrorCode = (int)ErrorCodes.NullObjectError,
-					ErrorMessage = ErrorMessages.NullInputParameters
+					Id = taskTypeFromRepo.Id,
+					Title = taskTypeFromRepo.Title,
+					CreateTime = taskTypeFromRepo.CreatedDate,
+					UpdateTime = taskTypeFromRepo.UpdatedDate,
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
 				};
 			}
-
-			var taskTypeFromRepo = await _taskTypeRepository.CreateAsync(taskType);
-
-			if(taskTypeFromRepo == null)
+			catch (Exception)
 			{
 				return new ITTaskTypeDto
 				{
@@ -35,14 +56,6 @@ namespace ITTasks.Services.Tasks.TasksType
 					ErrorMessage = ErrorMessages.ServerError
 				};
 			}
-
-			return new ITTaskTypeDto
-			{
-				Id = taskTypeFromRepo.Id,
-				Title = taskTypeFromRepo.Title,
-				CreateTime = taskTypeFromRepo.CreatedDate,
-				UpdateTime = taskTypeFromRepo.UpdatedDate
-			};
 		}
 
 		public async Task<List<ITTaskTypeDto>> GetAllAsync()

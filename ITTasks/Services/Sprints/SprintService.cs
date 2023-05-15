@@ -57,7 +57,7 @@ namespace ITTasks.Services.Sprints
 			return new SprintDto
 			{
 				Title = sprintFromRepo.Title,
-				StratDateTime = sprintFromRepo.StartDate,
+				StartDateTime = sprintFromRepo.StartDate,
 				EndDateTime = sprintFromRepo.EndDate,
 				StartDate = sprint.StartDate,
 				EndDate = sprint.EndDate,

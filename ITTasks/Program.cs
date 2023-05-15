@@ -11,9 +11,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ITDbContext>(options =>
+//builder.Services.AddDbContext<ITDbContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("ITTaskConnection"));
+//});
+
+builder.Services.AddDbContext<ITDbContext>(option =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ITTaskConnection"));
+    option.UseSqlite("Data Source=ittask.db");
 });
 
 
@@ -49,6 +54,12 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+using var scope = app.Services.CreateScope();
+
+var context = scope.ServiceProvider.GetRequiredService<ITDbContext>();
+
+context?.Database.Migrate();
 
 app.MapControllerRoute(
     name: "default",

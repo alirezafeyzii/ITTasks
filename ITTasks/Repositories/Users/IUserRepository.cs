@@ -9,5 +9,6 @@ namespace ITTasks.Repositories.Users
         public Task<List<User>> GetAllUsersAsync();
 		public Task<List<User>> GetAllActiveUsersAsync();
         public Task<User> GetUserByIdAsync(Guid id);
+        public Task<User> UpdateUserAsync(UserDto user);
 	}
 }

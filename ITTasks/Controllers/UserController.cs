@@ -1,4 +1,5 @@
 ﻿using ITTasks.Models.DTOS.Users;
+using ITTasks.Models.Errors;
 using ITTasks.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,5 +45,38 @@ namespace ITTasks.Controllers
             var users = await _userService.GetAllUsersAsync();
             return View(users);
         }
-    }
+
+        public async Task<IActionResult> UpdateUser()
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return View(new UserDto
+            {
+                Users = users
+            });
+        }
+
+        [HttpPost]
+		public async Task<IActionResult> UpdateUser(UserDto user)
+		{
+			var users = await _userService.GetAllUsersAsync();
+
+            var userAfterUpdate = await _userService.UpdatUserAsync(user);
+            if(userAfterUpdate.ErrorCode != (int)ErrorCodes.NoError)
+            {
+                ViewBag.ErrorMessage = userAfterUpdate.ErrorMessage;
+                return View(new UserDto
+				{
+					Users = users
+				});
+
+			}
+
+			ViewBag.SuccessfulMessage = "با موفقیت انجام شد";
+
+			return View(new UserDto
+			{
+				Users = users
+			});
+		}
+	}
 }

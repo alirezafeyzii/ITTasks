@@ -3,6 +3,7 @@ using System;
 using ITTasks.DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITTasks.Migrations
 {
     [DbContext(typeof(ITDbContext))]
-    partial class ITDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230515142438_add_unitId_to_tasks")]
+    partial class add_unitId_to_tasks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");

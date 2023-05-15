@@ -3,6 +3,7 @@ using System;
 using ITTasks.DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITTasks.Migrations
 {
     [DbContext(typeof(ITDbContext))]
-    partial class ITDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230515134607_add_unit_table")]
+    partial class add_unit_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
@@ -42,8 +45,8 @@ namespace ITTasks.Migrations
                     b.Property<Guid>("SprintId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UnitId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("UnitId")
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
@@ -53,6 +56,8 @@ namespace ITTasks.Migrations
                     b.HasIndex("ITTaskTypeId");
 
                     b.HasIndex("SprintId");
+
+                    b.HasIndex("UnitId");
 
                     b.HasIndex("UserId");
 
@@ -107,6 +112,27 @@ namespace ITTasks.Migrations
                     b.ToTable("Sprints");
                 });
 
+            modelBuilder.Entity("ITTasks.DataLayer.Entities.Unit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Units");
+                });
+
             modelBuilder.Entity("ITTasks.DataLayer.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -145,6 +171,12 @@ namespace ITTasks.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ITTasks.DataLayer.Entities.Unit", "Unit")
+                        .WithMany("Tasks")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ITTasks.DataLayer.Entities.User", "User")
                         .WithMany("Tasks")
                         .HasForeignKey("UserId")
@@ -155,6 +187,8 @@ namespace ITTasks.Migrations
 
                     b.Navigation("Sprint");
 
+                    b.Navigation("Unit");
+
                     b.Navigation("User");
                 });
 
@@ -164,6 +198,11 @@ namespace ITTasks.Migrations
                 });
 
             modelBuilder.Entity("ITTasks.DataLayer.Entities.Sprint", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("ITTasks.DataLayer.Entities.Unit", b =>
                 {
                     b.Navigation("Tasks");
                 });

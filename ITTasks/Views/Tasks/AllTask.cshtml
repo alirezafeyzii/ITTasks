@@ -21,7 +21,11 @@
 	</div>
 	<div class="col-8">
 		<div class="container mt-3 d-flex justify-content-center flex-wrap">
-			<h2>موردی برای نمایش وجود ندارد</h2>
+			@if (Model.Count == 0)
+			{
+				<h2>موردی برای نمایش وجود ندارد</h2>
+			}
+
 			@if (Model.Count != 0)
 			{
 				<table class="table data-table table-hover text-nowrap display col-12">
@@ -31,6 +35,7 @@
 							<th>نام کاربر </th>
 							<th>مقدار ساعت</th>
 							<th>تاریخ </th>
+							<th>اسپرینت</th>
 							<th>نوع تسک</th>
 							<th>توضیحات</th>
 							<th>حذف</th>
@@ -52,6 +57,7 @@
 								<td>@task.User.FullName</td>
 								<td>@task.HourAmount</td>
 								<td>@task.PersianDate</td>
+								<td>@task.Sprint.Title</td>
 								<td>@task.TaskType.Title</td>
 								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
 								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task">حذف</button></td>
