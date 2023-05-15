@@ -9,6 +9,7 @@ namespace ITTasks.DataLayer.Entities
         public DateTime Date { get; set; }
         public string Description { get; set; }
         public DateTime CreateDate { get; set; }
+        public int UnitId { get; set; }
 
         [ForeignKey("UserId")]
         public Guid UserId { get; set; }

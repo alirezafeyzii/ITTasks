@@ -40,6 +40,7 @@ namespace ITTasks.Repositories.Tasks
 				CreateDate = DateTime.Now,
 				ITTaskTypeId = task.TaskTypeId,
 				SprintId = task.SprintId,
+				UnitId = task.UnitId
 			});
 			await _dbContext.SaveChangesAsync();
 

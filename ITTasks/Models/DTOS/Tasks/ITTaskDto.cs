@@ -17,5 +17,7 @@ namespace ITTasks.Models.DTOS.Tasks
 
         public ITTaskTypeDto TaskType { get; set; }
         public PageInfo PageInfo { get; set; }
+        public int UnitId { get; set; }
+        public string UnitName { get; set; }
     }
 }

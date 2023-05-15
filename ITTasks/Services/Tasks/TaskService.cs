@@ -7,6 +7,7 @@ using ITTasks.Models.Errors;
 using ITTasks.Models.Parameters;
 using ITTasks.Repositories;
 using ITTasks.Repositories.Tasks;
+using ITTasks.Statics;
 
 namespace ITTasks.Services.Tasks
 {
@@ -62,6 +63,7 @@ namespace ITTasks.Services.Tasks
 					Description = taskModel.Description,
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError,
+					UnitId = taskModel.UnitId,
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = taskModel.User.Id,
@@ -124,6 +126,8 @@ namespace ITTasks.Services.Tasks
 					HourAmount = task.HourAmount,
 					Description = task.Description,
 					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.Date),
+					UnitId = task.UnitId,
+					UnitName = UnitsTypes.GetUnitName(task.UnitId),
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = task.User.Id,
@@ -182,5 +186,6 @@ namespace ITTasks.Services.Tasks
 
 			return taskGroup;
 		}
+		
 	}
 }

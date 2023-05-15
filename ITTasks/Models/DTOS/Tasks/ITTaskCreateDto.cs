@@ -20,7 +20,7 @@ namespace ITTasks.Models.DTOS.Tasks
         [DataType(DataType.Text)]
         [StringLength(100,ErrorMessage = "توضیحات حداکثر می تواند دارای 100 کاراکتر باشد  ")]
         public string Description { get; set; }
-
+        public int UnitId { get; set; }
         public string FullName { get; set; }
 		public string Title { get; set; }
 

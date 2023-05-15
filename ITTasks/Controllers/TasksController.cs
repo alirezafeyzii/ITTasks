@@ -98,24 +98,26 @@ namespace ITTasks.Controllers
 			ViewBag.SuccessfulMessage = "با موفقیت انجام شد";
 
 
-			return View(new ITTaskCreateDto
-            {
-                UserId = taskFromService.UserId.ToString(),
-                TaskDateTime = taskFromService.Date,
-                Description = taskFromService.Description,
-                FullName = taskFromService.User.FullName,   
-                HourAmount = taskFromService.HourAmount,
-                Users = usersGroup,
-                ITTasks = allTasks,
-                PersianDate = DateTimeExtention.ToPersianWithOutTime(taskFromService.Date),
-                ITTaskTypes = allTaskTypes,
-                Title = taskFromService.TaskType.Title,
-                ErrorMessage = taskFromService.TaskType.ErrorMessage,
-                ErrorCode = taskFromService.ErrorCode,
-				UserAdded = true,
-                pageInfo = allTasks.FirstOrDefault().PageInfo,
-				Sprints = allSprint
-			});
+			//return View(new ITTaskCreateDto
+			//         {
+			//             UserId = taskFromService.UserId.ToString(),
+			//             TaskDateTime = taskFromService.Date,
+			//             Description = taskFromService.Description,
+			//             FullName = taskFromService.User.FullName,   
+			//             HourAmount = taskFromService.HourAmount,
+			//             Users = usersGroup,
+			//             ITTasks = allTasks,
+			//             PersianDate = DateTimeExtention.ToPersianWithOutTime(taskFromService.Date),
+			//             ITTaskTypes = allTaskTypes,
+			//             Title = taskFromService.TaskType.Title,
+			//             ErrorMessage = taskFromService.TaskType.ErrorMessage,
+			//             ErrorCode = taskFromService.ErrorCode,
+			//	UserAdded = true,
+			//             pageInfo = allTasks.FirstOrDefault().PageInfo,
+			//	Sprints = allSprint
+			//});
+
+			return RedirectToAction("CreateTask");
         }
 
         [HttpPost("/Tasks/DeleteTask/{id}")]

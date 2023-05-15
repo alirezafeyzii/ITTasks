@@ -79,6 +79,14 @@
 				<span asp-validation-for="SprintId" class="text-danger small"></span>
 			</div>
 			<div class="mb-3">
+				<label asp-for="UnitId" class="form-label">واحد :</label>
+				<br />
+				<select class="form-select" asp-for="UnitId" asp-items="@(new SelectList(UnitsTypes.keyValues.AsEnumerable(),"Key","Value",Model.UnitId))">
+					<option class="dropdown-item" selected disabled>...انتخاب واحد...</option>
+				</select>
+				<span asp-validation-for="UnitId" class="text-danger small"></span>
+			</div>
+			<div class="mb-3">
 				<label asp-for="UserId" class="form-label">نام فرد انجام دهنده:</label>
 				<br />
 				<select class="form-select" asp-for="UserId" asp-items="@(new SelectList(Model.Users.AsEnumerable(),"Id","FullName",Model.UserId))">
@@ -136,6 +144,7 @@
 							<th>نام کاربر </th>
 							<th>مقدار ساعت</th>
 							<th>تاریخ </th>
+							<th>واحد </th>
 							<th>نوع تسک</th>
 							<th>توضیحات</th>
 							<th>حذف</th>
@@ -157,6 +166,7 @@
 								<td>@task.User.FullName</td>
 								<td>@task.HourAmount</td>
 								<td>@task.PersianDate</td>
+								<td>@task.UnitName</td>
 								<td>@task.TaskType.Title</td>
 								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
 								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task">حذف</button></td>
