@@ -13,14 +13,14 @@ namespace ITTasks.Models.DTOS.Tasks
         [Required(ErrorMessage = "وارد کردن نام شخص انجام دهنده الزامی است")]
         public string UserId { get; set; }
         [Required(ErrorMessage = "وارد کردن مقدار ساعت کار الزامی است")]
-        public float HourAmount { get; set; }
+		public float HourAmount { get; set; }
         [Display(Name = "تاریخ")]
         public long Date { get; set; }
         [Required(ErrorMessage = "وارد کردن توضیحات الزامی است")]
         [DataType(DataType.Text)]
         [StringLength(100,ErrorMessage = "توضیحات حداکثر می تواند دارای 100 کاراکتر باشد  ")]
         public string Description { get; set; }
-
+        public int UnitId { get; set; }
         public string FullName { get; set; }
 		public string Title { get; set; }
 

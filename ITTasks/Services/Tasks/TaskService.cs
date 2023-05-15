@@ -7,6 +7,9 @@ using ITTasks.Models.Errors;
 using ITTasks.Models.Parameters;
 using ITTasks.Repositories;
 using ITTasks.Repositories.Tasks;
+using ITTasks.Statics;
+
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 
 namespace ITTasks.Services.Tasks
 {
@@ -53,7 +56,7 @@ namespace ITTasks.Services.Tasks
 					};
 				}
 
-                return new ITTaskDto
+				return new ITTaskDto
 				{
 					Id = taskModel.Id,
 					UserId = taskModel.UserId,
@@ -62,6 +65,7 @@ namespace ITTasks.Services.Tasks
 					Description = taskModel.Description,
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError,
+					UnitId = taskModel.UnitId,
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = taskModel.User.Id,
@@ -95,7 +99,7 @@ namespace ITTasks.Services.Tasks
 				return false;
 
 			var taskAfterDeleted = await _taskRepository.DeleteTaskAsync(id);
-			if(taskAfterDeleted == false)
+			if (taskAfterDeleted == false)
 				return false;
 
 			return true;
@@ -106,7 +110,7 @@ namespace ITTasks.Services.Tasks
 			var taskGroup = new List<ITTaskDto>();
 
 			var tasks = await _taskRepository.GetAllTasksAsync(param);
-			
+
 			var pageInfo = new PageInfo
 			{
 				CurrentPage = tasks.CurrentPage,
@@ -124,6 +128,8 @@ namespace ITTasks.Services.Tasks
 					HourAmount = task.HourAmount,
 					Description = task.Description,
 					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.Date),
+					UnitId = task.UnitId,
+					UnitName = UnitsTypes.GetUnitName(task.UnitId),
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = task.User.Id,
@@ -138,6 +144,13 @@ namespace ITTasks.Services.Tasks
 						Title = task.ITTaskType.Title,
 						CreateTime = task.ITTaskType.CreatedDate,
 						UpdateTime = task.ITTaskType.UpdatedDate
+					},
+					Sprint = new Models.DTOS.Sprints.SprintDto
+					{
+						Id = task.Sprint.Id,
+						Title = task.Sprint.Title,
+						StartDateTime = task.Sprint.StartDate,
+						EndDateTime = task.Sprint.EndDate
 					},
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError
@@ -175,6 +188,13 @@ namespace ITTasks.Services.Tasks
 						CreateTime = task.ITTaskType.CreatedDate,
 						UpdateTime = task.ITTaskType.UpdatedDate
 					},
+					Sprint = new Models.DTOS.Sprints.SprintDto
+					{
+						Id = task.Sprint.Id,
+						Title = task.Sprint.Title,
+						StartDateTime = task.Date,
+						EndDateTime = task.Date
+					},
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError
 				});
@@ -182,5 +202,137 @@ namespace ITTasks.Services.Tasks
 
 			return taskGroup;
 		}
+
+		public async Task<ITTaskDto> GetTaskByIdAsync(Guid id)
+		{
+			if (id == Guid.Empty)
+				return new ITTaskDto
+				{
+					ErrorCode = (int)ErrorCodes.NullObjectError,
+					ErrorMessage = ErrorMessages.NullInputParameters
+				};
+
+			var task = await _taskRepository.GetTaskByIdAsync(id);
+			if(task == null)
+			{
+				return new ITTaskDto
+				{
+					ErrorCode = (int)ErrorCodes.ServerError,
+					ErrorMessage = ErrorMessages.ServerError
+				};
+			}
+
+			return new ITTaskDto
+			{
+				Id = task.Id,
+				UserId = task.UserId,
+				Date = task.Date,
+				HourAmount = task.HourAmount,
+				Description = task.Description,
+				PersianDate = DateTimeExtention.ToPersianWithOutTime(task.Date),
+				User = new Models.DTOS.Users.UserDto
+				{
+					Id = task.User.Id,
+					FullName = task.User.FullName,
+					CreatedTime = task.User.CreatedTime,
+					UpdatedTime = task.User.UpdatedTime,
+				},
+				TaskType = new Models.DTOS.Tasks.TasksType.ITTaskTypeDto
+				{
+					Id = task.ITTaskType.Id,
+					Title = task.ITTaskType.Title,
+					CreateTime = task.ITTaskType.CreatedDate,
+					UpdateTime = task.ITTaskType.UpdatedDate
+				},
+				Sprint = new Models.DTOS.Sprints.SprintDto
+				{
+					Id = task.Sprint.Id,
+					Title = task.Sprint.Title,
+					StartDateTime = task.Date,
+					EndDateTime = task.Date
+				},
+				ErrorCode = (int)ErrorCodes.NoError,
+				ErrorMessage = ErrorMessages.NoError
+
+			};
+		}
+
+		public async Task<ITTaskDto> UpdateTaskAsync(ITTaskUpdateDto task)
+		{
+			try
+			{
+				if (task.Id == Guid.Empty
+				&& task.SprintId == Guid.Empty
+				&& task.TaskTypeId == Guid.Empty
+				&& task.Description == null
+				&& task.HourAmount == 0)
+				{
+					return new ITTaskDto
+					{
+						ErrorCode = (int)ErrorCodes.NullObjectError,
+						ErrorMessage = ErrorMessages.NullInputParameters
+					};
+				}
+
+				var modifiedDate = task.Date.UnixToDateTime();
+
+				if (modifiedDate == new DateTime(1, 1, 1))
+				{
+					return new ITTaskDto()
+					{
+						ErrorCode = (int)ErrorCodes.NotAllowedDateTimeFormat,
+						ErrorMessage = ErrorMessages.NotAllowedDateTimeFormat
+					};
+				}
+
+				var taskFromRepo = await _taskRepository.UpdateTaskAsync(task, modifiedDate);
+				if (taskFromRepo == null)
+				{
+					return new ITTaskDto
+					{
+						ErrorCode = (int)ErrorCodes.ServerError,
+						ErrorMessage = ErrorMessages.ServerError
+					};
+				}
+
+				return new ITTaskDto
+				{
+					Id = taskFromRepo.Id,
+					Sprint = new Models.DTOS.Sprints.SprintDto
+					{
+						Id = taskFromRepo.Sprint.Id,
+						Title = taskFromRepo.Sprint.Title,
+						StartDateTime = taskFromRepo.Sprint.StartDate,
+						EndDateTime = taskFromRepo.Sprint.EndDate,
+					},
+					TaskType = new Models.DTOS.Tasks.TasksType.ITTaskTypeDto
+					{
+						Id = taskFromRepo.ITTaskType.Id,
+						Title = taskFromRepo.ITTaskType.Title
+					},
+					User = new Models.DTOS.Users.UserDto
+					{
+						Id = taskFromRepo.User.Id,
+						FullName = taskFromRepo.User.FullName,
+					},
+					Description = taskFromRepo.Description,
+					HourAmount = taskFromRepo.HourAmount,
+					PersianDate = DateTimeExtention.ToPersian(taskFromRepo.Date)
+				};
+
+			}
+			catch (Exception)
+			{
+
+				return new ITTaskDto
+				{
+					ErrorCode = (int)ErrorCodes.ServerError,
+					ErrorMessage = ErrorMessages.ServerError
+				};
+			}
+
+
+		}
+
 	}
 }

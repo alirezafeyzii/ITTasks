@@ -54,5 +54,28 @@ namespace ITTasks.Repositories.Users
 
             return user;
 		}
+
+		public async Task<User> UpdateUserAsync(UserDto user)
+		{
+            if (user.FullName == null)
+                return null;
+
+            if (user.Id == Guid.Empty)
+                return null;
+
+            var userFromFDb = await GetUserByIdAsync(user.Id);
+            if (userFromFDb == null)
+                return null;
+
+			userFromFDb.FullName = user.FullName;
+            userFromFDb.UpdatedTime = DateTime.Now;
+
+            var userForReturn = _dbContext.Users.Update(userFromFDb);
+
+            await _dbContext.SaveChangesAsync();
+
+            return userForReturn.Entity;
+
+		}
 	}
 }

@@ -8,5 +8,6 @@ namespace ITTasks.Services.Users
         public Task<List<UserDto>> GetAllUsersAsync();
         public Task<List<UserDto>> GetAllActiveUsersAsync();
         public Task<UserDto> GetUserByIdAsync(Guid id);
+        public Task<UserDto> UpdatUserAsync(UserDto user);
     }
 }
