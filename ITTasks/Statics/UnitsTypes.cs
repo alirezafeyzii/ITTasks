@@ -39,10 +39,9 @@
 			IT = 8
 		}
 
-
 		public static readonly Dictionary<int, string> keyValues = new Dictionary<int, string>()
 		{
-			{ (int)UnitIds.IT,"واحد فناوری اطلاعات"},
+			{ (int)UnitIds.IT,"فناوری اطلاعات"},
 			{ (int)UnitIds.Extention,"اکستنشن"},
 			{ (int)UnitIds.Sales,"فروش"},
 			{ (int)UnitIds.Commerce,"بازرگانی"},

@@ -58,6 +58,18 @@ namespace ITTasks.Services.Tasks.TasksType
 			}
 		}
 
+		public async Task<bool> DeleteAsync(Guid id)
+		{
+			if (id == Guid.Empty)
+				return false;
+
+			var result = await _taskTypeRepository.DeleteAsync(id);
+			if(result == false)
+				return false;
+
+			return true;
+		}
+
 		public async Task<List<ITTaskTypeDto>> GetAllAsync()
 		{
 			var taskTypeGroup = new List<ITTaskTypeDto>();

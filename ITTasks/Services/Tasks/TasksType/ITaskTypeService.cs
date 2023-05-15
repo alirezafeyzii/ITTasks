@@ -7,5 +7,6 @@ namespace ITTasks.Services.Tasks.TasksType
 	{
 		public Task<ITTaskTypeDto> CreateAsync(ITTaskTypeCreateDto taskType);
 		public Task<List<ITTaskTypeDto>> GetAllAsync();
+		public Task<bool> DeleteAsync(Guid id);
 	}
 }

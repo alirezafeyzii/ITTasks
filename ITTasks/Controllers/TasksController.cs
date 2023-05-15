@@ -287,5 +287,14 @@ namespace ITTasks.Controllers
 			return RedirectToAction("CreateTask");
 		}
 
+		//[HttpPost("/Tasks/DeleteTaskType/{id}")]
+		public async Task<IActionResult> DeleteTaskType(Guid id)
+		{
+			var result = await _taskTypeService.DeleteAsync(id);
+			if (result)
+				return RedirectToAction("AllTask");
+			return BadRequest();
+		}
+
 	}
 }

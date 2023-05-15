@@ -32,9 +32,37 @@ namespace ITTasks.Repositories.Tasks.TasksType
 			return taskTypeAfterAdded.Entity;
 		}
 
+		public async Task<bool> DeleteAsync(Guid id)
+		{
+			if (id == Guid.Empty)
+				return false;
+
+			var taskType = await GetByIdAsync(id);
+			if (taskType == null)
+				return false;
+
+			_dbContext.TasksType.Remove(taskType);
+
+			await _dbContext.SaveChangesAsync();
+
+			return true;
+		}
+
 		public async Task<List<ITTaskType>> GetAllAsync()
 		{
 			return await _dbContext.TasksType.ToListAsync();
+		}
+
+		public async Task<ITTaskType> GetByIdAsync(Guid id)
+		{
+			if (id == Guid.Empty)
+				return null;
+
+			var taskType = await _dbContext.TasksType.SingleOrDefaultAsync(tt => tt.Id == id);
+			if (taskType == null)
+				return null;
+
+			return taskType;
 		}
 	}
 }

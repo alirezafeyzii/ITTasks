@@ -10,7 +10,7 @@
 				<br />
 				<select class="form-select" asp-for="Task.UserId" asp-items="@(new SelectList(Model.Users.AsEnumerable(),"Id","FullName",Model.User.Id))">
 					<option class="dropdown-item" selected disabled>...انتخاب کاربر...</option>
-				</select>
+				</select>	
 				<span asp-validation-for="Task.UserId" class="text-danger small"></span>
 			</div>
 			<div class="mb-3">

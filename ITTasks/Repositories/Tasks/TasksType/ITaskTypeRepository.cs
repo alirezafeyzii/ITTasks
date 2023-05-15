@@ -8,5 +8,7 @@ namespace ITTasks.Repositories.Tasks.TasksType
 	{
 		public Task<ITTaskType> CreateAsync(ITTaskTypeCreateDto taskType);
 		public Task<List<ITTaskType>> GetAllAsync();
+		public Task<bool> DeleteAsync(Guid id);
+		public Task<ITTaskType> GetByIdAsync(Guid id);
 	}
 }
