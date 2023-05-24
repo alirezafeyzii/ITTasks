@@ -1,4 +1,5 @@
-﻿using ITTasks.Models.DTOS.Tasks;
+﻿using ITTasks.DataLayer.Entities;
+using ITTasks.Models.DTOS.Tasks;
 using ITTasks.Models.DTOS.Users;
 using ITTasks.Models.Errors;
 using ITTasks.Repositories.Users;
@@ -12,6 +13,41 @@ namespace ITTasks.Services.Users
 		public UserService(IUserRepository userRepository)
 		{
 			_userRepository = userRepository;
+		}
+
+		public async Task<UserDto> ChangeUserStatusAsync(Guid id, bool status)
+		{
+			try
+			{
+				if (id == Guid.Empty)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.UserIdError,
+						ErrorMessage = ErrorMessages.UserIdError,
+					};
+				}
+
+				UserDto userFromRepo = await _userRepository.ChangeUserStatusAsync(id, status);
+				if (userFromRepo == null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.UserNotFound,
+						ErrorMessage = ErrorMessages.UserNotFound,
+					};
+				}
+
+				return userFromRepo;
+			}
+			catch (Exception)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.ServerError,
+					ErrorMessage = ErrorMessages.ServerError,
+				};
+			}
 		}
 
 		public async Task<UserDto> CreateUserAsync(CreateUserDto user)

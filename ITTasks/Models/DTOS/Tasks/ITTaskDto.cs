@@ -10,7 +10,7 @@ namespace ITTasks.Models.DTOS.Tasks
 	{
 		public Guid Id { get; set; }
 		public Guid UserId { get; set; }
-		public float HourAmount { get; set; }
+		public int Duration { get; set; }
 		public DateTime Date { get; set; }
 		public string Description { get; set; }
 		public UserDto User { get; set; }
@@ -20,5 +20,6 @@ namespace ITTasks.Models.DTOS.Tasks
 		public int UnitId { get; set; }
 		public string UnitName { get; set; }
 		public SprintDto Sprint { get; set; }
+		public string StandardDuration { get; set; }
 	}
 }

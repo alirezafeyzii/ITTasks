@@ -1,7 +1,16 @@
 ﻿@using ITTasks.Infrastructure.Helper;
 @using ITTasks.Models.DTOS.Tasks;
+@using ITTasks.Statics;
 @model List<ITTaskDto>
 
+
+@section Styles{
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="~/lib/datatables/datatables.min.css" />
+}
 
 <style>
 	td {
@@ -15,7 +24,62 @@
 		overflow: hidden;
 		white-space: nowrap;
 	}
+
+	.modal {
+		position: fixed; /* Stay in place */
+		z-index: 1; /* Sit on top */
+		left: 0;
+		top: 0;
+		width: 100%; /* Full width */ /* Full height */
+		overflow: auto; /* Enable scroll if needed */
+		background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+	}
+
+	/* Modal Content/Box */
+	.modal-content-custom {
+		background-color: #fefefe;
+		margin: 4.7% auto; /* 10% from the top and centered */
+		padding: 20px;
+		border: 1px solid #888;
+		width: 50%; /* Could be more or less, depending on screen size */
+		border-radius: 0.5rem;
+	}
+
+	/* Close Button */
+	.close {
+		color: #aaa;
+		float: right;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+	div.dataTables_wrapper div.dataTables_filter input {
+		margin-left: 0.5em;
+		display: inline-block;
+		width: 400px;
+	}
+
+	div.dataTables_wrapper div.dataTables_filter {
+		text-align: left;
+	}
 </style>
+
+<div id="modal" class="modal">
+	<div class="modal-content-custom">
+		<span title="بستن" class="close">&times;</span>
+		<br />
+		<div id="edit-modal-content"></div>
+	</div>
+</div>
+
+
 <div class="row">
 	<div class="col-2" style="margin-right:50px">
 	</div>
@@ -33,14 +97,14 @@
 						<tr>
 							<th>شماره</th>
 							<th>نام کاربر </th>
-							<th>مقدار ساعت</th>
+							<th>مدت</th>
 							<th>تاریخ </th>
 							<th>واحد </th>
 							<th>اسپرینت</th>
 							<th>نوع تسک</th>
 							<th>توضیحات</th>
-							<th>حذف</th>
-							<th>ویرایش</th>
+							<th></th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -56,26 +120,27 @@
 										)
 								</td>
 								<td>@task.User.FullName</td>
-								<td>@task.HourAmount</td>
+								<td>@task.StandardDuration</td>
 								<td>@task.PersianDate</td>
 								<td>@task.UnitName</td>
 								<td>@task.Sprint.Title</td>
 								<td>@task.TaskType.Title</td>
 								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
-								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task">حذف</button></td>
-								<td><a href="/Tasks/UpdateTask?id=@task.Id"><button class="btn btn-info">ویرایش</button></a></td>
+								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task" title="حذف"><i class="fa" aria-hidden="true">&#xf014;</i></button></td>
+								@*<td><a href="/Tasks/UpdateTask?id=@task.Id"><button class="btn btn-info">ویرایش</button></a></td>*@
+								<td>
+									<button data-edit-task-id="@task.Id" class="btn btn-info btn-edit" title="ویرایش">
+										<i class='fa fa-edit' style="color:white"></i>
+									</button>
+								</td>
 							</tr>
 						}
 
 					</tbody>
 				</table>
 
-				<div class="col-3"></div>
-				<div class="d-flex col-6 justify-content-center">
-					@Html.PageLinks(@Model.FirstOrDefault().PageInfo, x => Url.Action("AllTask",
-				new { pageNumber = x.ToString()}))
-				</div>
-				<div class="col-3 d-flex justify-content-end">
+				
+				<div class="col-3 justify-content-end">
 					<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
 				</div>
 			}
@@ -83,7 +148,8 @@
 
 
 		@section Scripts {
-
+			<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
+			<script type="text/javascript" src="~/js/datatable.js"></script>
 			<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
 			<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -95,6 +161,28 @@
 
 			<script type="text/javascript">
 
+
+				$(".btn-edit").on("click", function () {
+
+					taskToEditId = $(this).data("edit-task-id")
+
+					$.ajax({
+						url: "/Tasks/UpdateTask?id=" + taskToEditId,
+					}).done(function (result) {
+						openModal("modal");
+						$("#modal #edit-modal-content").html(result);
+					});
+
+				}
+				);
+
+				$(".close").on("click", function () {
+					$("#modal").hide();
+				});
+
+				function openModal(modalId) {
+					$("#" + modalId).show();
+				}
 
 				$('#Date').keyup(function () {
 					var new_stuff = $(this).val();
@@ -131,7 +219,7 @@
 
 
 					fetch("/Tasks/DeleteTask/" + taskToDeleteId, {
-						method: "DELETE", // or 'PUT'
+						method: "POST", // or 'PUT'
 						headers: {
 							"Content-Type": "application/json",
 						},
@@ -139,7 +227,7 @@
 						console.log(res, 'res')
 						if (res.errorCode == 1) {
 							setTimeout(function () {
-								location.replace("https://localhost:7180/Tasks/AllTask")
+								location.replace("@Urls.BaseUrl")
 							}, 2000)
 
 							DeleteAlert()

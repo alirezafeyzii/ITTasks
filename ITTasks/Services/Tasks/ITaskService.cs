@@ -1,6 +1,9 @@
-﻿using ITTasks.Models.DTOS;
+﻿using ITTasks.DataLayer.Entities;
+using ITTasks.Models.DTOS;
+using ITTasks.Models.DTOS.Reports.Reporting;
 using ITTasks.Models.DTOS.Tasks;
 using ITTasks.Models.Parameters;
+using static ITTasks.Repositories.Tasks.TaskRepository;
 
 namespace ITTasks.Services.Tasks
 {
@@ -12,5 +15,8 @@ namespace ITTasks.Services.Tasks
         public Task<List<ITTaskDto>> GetAllWithOutPaging();
         public Task<ITTaskDto> UpdateTaskAsync(ITTaskUpdateDto task);
         public Task<ITTaskDto> GetTaskByIdAsync(Guid id);
-    }
+        public Task<List<ITTaskDto>> GetAllTaskForUserAsync(Guid id, List<string> sprintIds);
+		public Task<List<ITTaskDto>> GetTasksForReportingAsync(ReportingSearchDto searchRequest);
+        public Task<ReportViewModel> GetReporting();
+	}
 }

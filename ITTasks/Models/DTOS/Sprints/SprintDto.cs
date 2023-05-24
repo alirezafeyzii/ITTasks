@@ -1,4 +1,7 @@
-﻿namespace ITTasks.Models.DTOS.Sprints
+﻿using ITTasks.DataLayer.Entities;
+using ITTasks.Models.DTOS.Users;
+
+namespace ITTasks.Models.DTOS.Sprints
 {
 	public class SprintDto : BaseDTO
 	{
@@ -10,5 +13,7 @@
 		public DateTime EndDateTime { get; set; }
 		public string StringStartDate { get;set; }
 		public string StringEndDate { get; set; }
+
+		
 	}
 }

@@ -78,5 +78,12 @@ namespace ITTasks.Controllers
 				Users = users
 			});
 		}
+
+        [HttpPost("User/ChangeStatus/{id}/{status}")]
+        public async Task<IActionResult> ChangeStatus(Guid id, bool status)
+        {
+            var user = await _userService.ChangeUserStatusAsync(id, status);
+            return Json(user);
+        }
 	}
 }

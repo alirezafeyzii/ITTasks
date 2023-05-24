@@ -1,0 +1,111 @@
+﻿@using ITTasks.Models.DTOS.Tasks;
+@model List<ITTaskDto>
+
+
+@section Styles{
+
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
+	@*<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />*@
+
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="~/lib/datatables/datatables.min.css" />
+}
+
+<style>
+	.bg-gray-custom {
+		background: rgba(239,239,234,1);
+		padding: 10px;
+		overflow:auto;
+	}
+
+	.border-radius-5 {
+		border-radius: 5px;
+	}
+
+	.border-radius-10 {
+		border-radius: 10px;
+	}
+
+	.border-radius-15 {
+		border-radius: 15px;
+	}
+
+	.border-radius-20 {
+		border-radius: 20px;
+	}
+
+	.border-radius-25 {
+		border-radius: 25px;
+	}
+
+	.border-radius-30 {
+		border-radius: 30px;
+	}
+	
+</style>
+
+<div class="container mt-3 d-flex justify-content-center flex-wrap bg-gray-custom border-radius-5">
+	@if (Model.Count == 0)
+	{
+		<h2>موردی برای نمایش وجود ندارد</h2>
+	}
+
+	@if (Model.Count != 0)
+	{
+
+		<table class="table data-table table-hover text-nowrap display col-12" id="MyTable1">
+			<thead>
+				<tr>
+					<th>شماره</th>
+					<th>نام کاربر </th>
+					<th>مدت</th>
+					<th>تاریخ </th>
+					<th>واحد </th>
+					<th>اسپرینت</th>
+					<th>نوع تسک</th>
+					<th>توضیحات</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					int i = 1;
+				}
+				@foreach (var task in Model)
+				{
+					<tr>
+						<td>
+							@(
+								i++
+								)
+						</td>
+						<td>@task.User.FullName</td>
+						<td>@task.StandardDuration</td>
+						<td>@task.PersianDate</td>
+						<td>@task.UnitName</td>
+						<td>@task.Sprint.Title</td>
+						<td>@task.TaskType.Title</td>
+						<td class="overflow-dotted" title="@task.Description">@task.Description</td>
+
+					</tr>
+				}
+
+			</tbody>
+		</table>
+	}
+</div>
+
+
+@section Scripts {
+	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
+	<script type="text/javascript" src="~/js/datatable.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		//$(document).ready(function () {
+		//	$('#MyTable1').DataTable();
+		//});
+	</script>
+}
+

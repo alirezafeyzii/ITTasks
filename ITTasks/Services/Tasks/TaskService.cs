@@ -2,6 +2,7 @@
 using ITTasks.Infrastructure.Helper;
 using ITTasks.Infrastructure.Utilities;
 using ITTasks.Models.DTOS;
+using ITTasks.Models.DTOS.Reports.Reporting;
 using ITTasks.Models.DTOS.Tasks;
 using ITTasks.Models.Errors;
 using ITTasks.Models.Parameters;
@@ -60,8 +61,8 @@ namespace ITTasks.Services.Tasks
 				{
 					Id = taskModel.Id,
 					UserId = taskModel.UserId,
-					Date = taskModel.Date,
-					HourAmount = taskModel.HourAmount,
+					Date = taskModel.StartDate,
+					Duration = taskModel.Duration,
 					Description = taskModel.Description,
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError,
@@ -82,8 +83,18 @@ namespace ITTasks.Services.Tasks
 					}
 				};
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
+
+				if (ex.Data["conf"] == "conf")
+				{
+					return new ITTaskDto
+					{
+						ErrorCode = (int)ErrorCodes.ConflictTask,
+						ErrorMessage = ex.Data["Id"].ToString(),
+					};
+				}
+
 				return new ITTaskDto
 				{
 					ErrorCode = (int)ErrorCodes.ServerError,
@@ -105,6 +116,50 @@ namespace ITTasks.Services.Tasks
 			return true;
 		}
 
+		public async Task<List<ITTaskDto>> GetAllTaskForUserAsync(Guid id, List<string> sprintIds)
+		{
+			var allTasks = new List<ITTaskDto>();
+
+			if (id == Guid.Empty)
+				return null;
+
+			var tasks = await _taskRepository.GetAllTaskForUserAsync(id, sprintIds);
+
+            foreach (var task in tasks)
+            {
+				allTasks.Add(new ITTaskDto
+				{
+					Id = task.Id,
+					
+					UserId = task.UserId,
+					User = task.User,
+					Date = task.StartDate,
+					Duration = task.Duration,
+					Description = task.Description,
+					StandardDuration = DateTimeExtention.ToStandardTime(task.Duration),
+					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.StartDate),
+					UnitId = task.UnitId,
+					UnitName = UnitsTypes.GetUnitName(task.UnitId),
+					TaskType = new Models.DTOS.Tasks.TasksType.ITTaskTypeDto
+					{
+						Id = task.ITTaskType.Id,
+						Title = task.ITTaskType.Title,
+						CreateTime = task.ITTaskType.CreatedDate,
+						UpdateTime = task.ITTaskType.UpdatedDate
+					},
+					Sprint = new Models.DTOS.Sprints.SprintDto
+					{
+						Id = task.Sprint.Id,
+						Title = task.Sprint.Title,
+						StartDateTime = task.Sprint.StartDate,
+						EndDateTime = task.Sprint.EndDate
+					}
+				});
+            }
+
+			return allTasks;
+        }
+
 		public async Task<List<ITTaskDto>> GetAllTasksAsync(TaskParameters param)
 		{
 			var taskGroup = new List<ITTaskDto>();
@@ -124,10 +179,11 @@ namespace ITTasks.Services.Tasks
 				{
 					Id = task.Id,
 					UserId = task.UserId,
-					Date = task.Date,
-					HourAmount = task.HourAmount,
+					Date = task.StartDate,
+					Duration = task.Duration,
 					Description = task.Description,
-					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.Date),
+					StandardDuration = DateTimeExtention.ToStandardTime(task.Duration),
+					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.StartDate),
 					UnitId = task.UnitId,
 					UnitName = UnitsTypes.GetUnitName(task.UnitId),
 					User = new Models.DTOS.Users.UserDto
@@ -170,10 +226,12 @@ namespace ITTasks.Services.Tasks
 				{
 					Id = task.Id,
 					UserId = task.UserId,
-					Date = task.Date,
-					HourAmount = task.HourAmount,
+					Date = task.StartDate,
+					Duration = task.Duration,
+					StandardDuration = DateTimeExtention.ToStandardTime(task.Duration),
 					Description = task.Description,
-					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.Date),
+					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.StartDate),
+					UnitId = task.UnitId,
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = task.User.Id,
@@ -192,8 +250,8 @@ namespace ITTasks.Services.Tasks
 					{
 						Id = task.Sprint.Id,
 						Title = task.Sprint.Title,
-						StartDateTime = task.Date,
-						EndDateTime = task.Date
+						StartDateTime = task.StartDate,
+						EndDateTime = task.StartDate
 					},
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError
@@ -201,6 +259,12 @@ namespace ITTasks.Services.Tasks
 			}
 
 			return taskGroup;
+		}
+
+		public async Task<TaskRepository.ReportViewModel> GetReporting()
+		{
+			var rp = await _taskRepository.GetAllForReportingAsync();
+			return rp;
 		}
 
 		public async Task<ITTaskDto> GetTaskByIdAsync(Guid id)
@@ -213,7 +277,7 @@ namespace ITTasks.Services.Tasks
 				};
 
 			var task = await _taskRepository.GetTaskByIdAsync(id);
-			if(task == null)
+			if (task == null)
 			{
 				return new ITTaskDto
 				{
@@ -226,10 +290,11 @@ namespace ITTasks.Services.Tasks
 			{
 				Id = task.Id,
 				UserId = task.UserId,
-				Date = task.Date,
-				HourAmount = task.HourAmount,
+				Date = task.StartDate,
+				Duration = task.Duration,
+				StandardDuration = DateTimeExtention.ToStandardTime(task.Duration),
 				Description = task.Description,
-				PersianDate = DateTimeExtention.ToPersianWithOutTime(task.Date),
+				PersianDate = DateTimeExtention.ToPersianWithOutTime(task.StartDate),
 				User = new Models.DTOS.Users.UserDto
 				{
 					Id = task.User.Id,
@@ -248,13 +313,58 @@ namespace ITTasks.Services.Tasks
 				{
 					Id = task.Sprint.Id,
 					Title = task.Sprint.Title,
-					StartDateTime = task.Date,
-					EndDateTime = task.Date
+					StartDateTime = task.StartDate,
+					EndDateTime = task.StartDate
 				},
 				ErrorCode = (int)ErrorCodes.NoError,
 				ErrorMessage = ErrorMessages.NoError
 
 			};
+		}
+
+		public async Task<List<ITTaskDto>> GetTasksForReportingAsync(ReportingSearchDto searchRequest)
+		{
+			var taskGroup = new List<ITTaskDto>();
+			var tasks = await _taskRepository.GetTasksForReporting(searchRequest);
+			foreach (var task in tasks)
+			{
+				taskGroup.Add(new ITTaskDto
+				{
+					Id = task.Id,
+					UserId = task.UserId,
+					Date = task.StartDate,
+					Duration = task.Duration,
+					StandardDuration = DateTimeExtention.ToStandardTime(task.Duration),
+					Description = task.Description,
+					PersianDate = DateTimeExtention.ToPersianWithOutTime(task.StartDate),
+					UnitId = task.UnitId,
+					UnitName = task.UnitId.GetUnitName(),
+					User = new Models.DTOS.Users.UserDto
+					{
+						Id = task.User.Id,
+						FullName = task.User.FullName,
+						CreatedTime = task.User.CreatedTime,
+						UpdatedTime = task.User.UpdatedTime,
+					},
+					TaskType = new Models.DTOS.Tasks.TasksType.ITTaskTypeDto
+					{
+						Id = task.ITTaskType.Id,
+						Title = task.ITTaskType.Title,
+						CreateTime = task.ITTaskType.CreatedDate,
+						UpdateTime = task.ITTaskType.UpdatedDate
+					},
+					Sprint = new Models.DTOS.Sprints.SprintDto
+					{
+						Id = task.Sprint.Id,
+						Title = task.Sprint.Title,
+						StartDateTime = task.StartDate,
+						EndDateTime = task.StartDate
+					},
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
+				});
+			}
+			return taskGroup;
 		}
 
 		public async Task<ITTaskDto> UpdateTaskAsync(ITTaskUpdateDto task)
@@ -265,7 +375,7 @@ namespace ITTasks.Services.Tasks
 				&& task.SprintId == Guid.Empty
 				&& task.TaskTypeId == Guid.Empty
 				&& task.Description == null
-				&& task.HourAmount == 0)
+				&& task.Duration == 0)
 				{
 					return new ITTaskDto
 					{
@@ -316,8 +426,9 @@ namespace ITTasks.Services.Tasks
 						FullName = taskFromRepo.User.FullName,
 					},
 					Description = taskFromRepo.Description,
-					HourAmount = taskFromRepo.HourAmount,
-					PersianDate = DateTimeExtention.ToPersian(taskFromRepo.Date)
+					Duration = taskFromRepo.Duration,
+					StandardDuration = DateTimeExtention.ToStandardTime(taskFromRepo.Duration),
+					PersianDate = DateTimeExtention.ToPersian(taskFromRepo.StartDate)
 				};
 
 			}

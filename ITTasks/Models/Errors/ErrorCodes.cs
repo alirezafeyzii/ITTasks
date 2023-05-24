@@ -9,6 +9,7 @@
 		ServerError,
 		UserFullNameError,
 		UserIdError,
-		UserNotFound
+		UserNotFound,
+		ConflictTask
 	}
 }

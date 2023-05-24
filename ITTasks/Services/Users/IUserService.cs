@@ -9,5 +9,6 @@ namespace ITTasks.Services.Users
         public Task<List<UserDto>> GetAllActiveUsersAsync();
         public Task<UserDto> GetUserByIdAsync(Guid id);
         public Task<UserDto> UpdatUserAsync(UserDto user);
+        public Task<UserDto> ChangeUserStatusAsync(Guid id, bool status);
     }
 }

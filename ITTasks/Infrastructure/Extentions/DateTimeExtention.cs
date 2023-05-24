@@ -47,5 +47,22 @@ namespace ITTasks.Infrastructure.Extentions
 
 			return format;
 		}
+
+        public static string ToStandardTime(this int time)
+        {
+            try
+            {
+				var hour = time / 60;
+				var minutes = time % 60;
+
+				return $"{hour.ToString("00")}:{minutes.ToString("00")}";
+			}
+            catch (Exception)
+            {
+
+                return "-00:-00";
+            }
+
+        }
 	}
 }

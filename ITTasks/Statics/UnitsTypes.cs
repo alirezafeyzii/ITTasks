@@ -51,7 +51,7 @@
 			{ (int)UnitIds.Services,"خدمات"},
 		};
 
-		public static string GetUnitName(int id)
+		public static string GetUnitName(this int id)
 		{
 			return keyValues[id] ?? "";
 		}

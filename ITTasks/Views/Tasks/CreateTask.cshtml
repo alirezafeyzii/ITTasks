@@ -7,6 +7,8 @@
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
 	<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="~/lib/datatables/datatables.min.css" />
 }
 <style>
 	td {
@@ -66,7 +68,64 @@
 		white-space: nowrap;
 	}
 
+	.modal {
+		position: fixed; /* Stay in place */
+		z-index: 1; /* Sit on top */
+		left: 0;
+		top: 0;
+		width: 100%; /* Full width */ /* Full height */
+		overflow: auto; /* Enable scroll if needed */
+		background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+	}
+
+	/* Modal Content/Box */
+	.modal-content-custom {
+		background-color: #fefefe;
+		margin: auto; /* 10% from the top and centered */
+		padding: 20px;
+		border: 1px solid #888;
+		width: 50%; /* Could be more or less, depending on screen size */
+		border-radius: 0.5rem;
+	}
+
+	/* Close Button */
+	.close {
+		color: #aaa;
+		float: right;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+	div.dataTables_wrapper div.dataTables_filter input {
+		margin-left: 0.5em;
+		display: inline-block;
+		width: 400px;
+	}
+
+	div.dataTables_wrapper div.dataTables_filter {
+		text-align: left;
+	}
+
 </style>
+
+@*<div id="editModal" class="w-100 position-absolute" style="height:700px;display:none;z-index:999">*@
+
+	<div id="modal" class="modal">
+		<div class="modal-content-custom">
+			<span title="بستن" class="close">&times;</span>
+			<br />
+			<div id="edit-modal-content"></div>
+		</div>
+	</div>
+@*</div>*@
+
 <div class="row">
 	<div class="col-2" style="margin-right:50px">
 		<form asp-action="CreateTask" asp-controller="Tasks" method="post" style="display:inline">
@@ -103,9 +162,9 @@
 				<span asp-validation-for="TaskTypeId" class="text-danger small"></span>
 			</div>
 			<div class="mb-3">
-				<label asp-for="HourAmount" class="form-label">مقدار ساعت انجام کار:</label>
-				<input asp-for="HourAmount" type="number" min="0.25" step="0.25" value="0.25" class="form-control">
-				<span asp-validation-for="HourAmount" class="text-danger small"></span>
+				<label asp-for="Duration" class="form-label">مدت انجام کار(دقیقه):</label>
+				<input asp-for="Duration" type="number" min="5" step="5" value="5" class="form-control">
+				<span asp-validation-for="Duration" class="text-danger small"></span>
 			</div>
 
 			<div class="mb-3">
@@ -123,7 +182,7 @@
 			<input type="submit" class="btn btn-success" value="ثبت" />
 			<br />
 			<span class="text-success">@ViewBag.SuccessfulMessage</span>
-			<span class="text-danger">@ViewBag.ErrorMessage</span>
+			<span class="text-danger">@Html.Raw(ViewBag.ErrorMessage)</span>
 		</form>
 	</div>
 
@@ -137,19 +196,20 @@
 
 			@if (Model.ITTasks.Count != 0)
 			{
+
 				<table class="table data-table table-hover text-nowrap display col-12">
 					<thead>
 						<tr>
 							<th>شماره</th>
 							<th>نام کاربر </th>
-							<th>مقدار ساعت</th>
+							<th>مدت</th>
 							<th>تاریخ </th>
 							<th>واحد </th>
 							<th>اسپرینت</th>
 							<th>نوع تسک</th>
 							<th>توضیحات</th>
-							<th>حذف</th>
-							<th>ویرایش</th>
+							<th></th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -165,27 +225,39 @@
 										)
 								</td>
 								<td>@task.User.FullName</td>
-								<td>@task.HourAmount</td>
+								<td>@task.StandardDuration</td>
 								<td>@task.PersianDate</td>
 								<td>@task.UnitName</td>
 								<td>@task.Sprint.Title</td>
 								<td>@task.TaskType.Title</td>
 								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
-								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task">حذف</button></td>
-								<td><a href="/Tasks/UpdateTask?id=@task.Id"><button class="btn btn-info">ویرایش</button></a></td>
+								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task" title="حذف"><i class="fa" aria-hidden="true">&#xf014;</i></button></td>
+								@*<td><a href="/Tasks/UpdateTask?id=@task.Id"><button class="btn btn-info">ویرایش</button></a></td>*@
+								<td>
+									<button data-edit-task-id="@task.Id" class="btn btn-info btn-edit" title="ویرایش">
+										<i class='fa fa-edit' style="color:white"></i>
+									</button>
+								</td>
+
 							</tr>
 						}
 
 					</tbody>
 				</table>
-				<div class="col-3"></div>
+
+				@*<div class="col-3"></div>
+				<div class="col-3 justify-content-end">
+					<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
+				</div>*@
+
+				@*<div class="col-3"></div>
 				<div class="d-flex col-6 justify-content-center">
 					@Html.PageLinks(@Model.pageInfo, x => Url.Action("CreateTask",
 				new { pageNumber = x.ToString()}))
 				</div>
 				<div class="col-3 d-flex justify-content-end">
 					<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
-				</div>
+				</div>*@
 			}
 		</div>
 	</div>
@@ -197,17 +269,17 @@
 
 
 @section Scripts {
-
+	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
+	<script type="text/javascript" src="~/js/datatable.js"></script>
 	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
 	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="sweetalert2.min.js"></script>
 	<link rel="stylesheet" href="sweetalert2.min.css">
-	@*<script type="text/javascript" src="~/lib/data-tables/datatables.min.js"></script>
-	<script type="text/javascript" src="~/assets/js/datatable.js"></script>*@
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
+	
+		@{
+			await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		}
 
 	<script type="text/javascript">
 
@@ -221,6 +293,8 @@
 
 		var taskToDeleteId = "";
 
+		var taskToEditId = "";
+
 		$(document).ready(function () {
 
 			if ('@Model.UserAdded' == true) {
@@ -233,6 +307,9 @@
 				format: 'YYYY/MM/DD',
 				altField: '#Date',
 				altFormat: 'X',
+				timePicker: {
+					enabled: true,
+				},
 				toolbox: {
 					calendarSwitch: {
 						enabled: false
@@ -256,6 +333,41 @@
 			});
 
 		});
+
+
+
+
+		$(document).ready(function () {
+			$('>data-table').DataTable({
+				dom: 'Bfrtip',
+				buttons: [
+					'copy', 'csv', 'excel', 'pdf', 'print'
+				]
+			});
+		});
+
+
+		$(".btn-edit").on("click", function () {
+
+			taskToEditId = $(this).data("edit-task-id")
+			
+			$.ajax({
+				url: "/Tasks/UpdateTask?id=" + taskToEditId,
+			}).done(function (result) {
+				openModal("modal");
+				$("#modal #edit-modal-content").html(result);
+			});
+
+		}
+		);
+
+		$(".close").on("click", function(){
+			$("#modal").hide();
+		});
+
+		function openModal(modalId) {
+			$("#" + modalId).show();
+		}
 
 
 		function deleteTask() {
@@ -349,6 +461,34 @@
 				})
 			}
 		}
+
+
+
+
+
+
+
+
+
+
+				//function postdata() {
+				//	//change Age type to int
+				//	var person = { "FirstName": "Andrew", "LastName": "Lock", "Age": 31 };
+				//	$.ajax({
+				//		type: "POST",
+				//		url: "/UpdatePostBody?handler=Abc",
+				//		contentType: "application/json; charset=utf-8",
+				//		dataType: "json",
+				//		data: JSON.stringify(person),
+				//		headers: {
+				//			RequestVerificationToken:
+				//				$('input:hidden[name="__RequestVerificationToken"]').val()
+				//		},
+				//	})
+				//		.done(function (result) {
+				//			console.log(result);
+				//		});
+				//}
 
 	</script>
 }

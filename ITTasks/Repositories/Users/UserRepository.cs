@@ -1,80 +1,100 @@
 ﻿using ITTasks.DataLayer;
 using ITTasks.DataLayer.Entities;
 using ITTasks.Models.DTOS.Users;
+using ITTasks.Models.Errors;
 using Microsoft.EntityFrameworkCore;
 
 namespace ITTasks.Repositories.Users
 {
-    public class UserRepository : IUserRepository
-    {
-        private readonly ITDbContext _dbContext;
+	public class UserRepository : IUserRepository
+	{
+		private readonly ITDbContext _dbContext;
 
-        public UserRepository(ITDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+		public UserRepository(ITDbContext dbContext)
+		{
+			_dbContext = dbContext;
+		}
 
-        public async Task<User> CreateUserAsync(CreateUserDto user)
-        {
-            if (user.FullName == null)
-                return null;
+		public async Task<User> ChangeUserStatusAsync(Guid id, bool status)
+		{
+			if (id == Guid.Empty)
+				return null;
 
-            var userSAfterAdd = await _dbContext.Users.AddAsync(new User
-            {
-                FullName = user.FullName,
-                IsActive = false,
-                CreatedTime = DateTime.Now,
-                UpdatedTime = DateTime.MinValue,
-            });
+			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == id);
+			if (user == null)
+				return null;
 
-            await _dbContext.SaveChangesAsync();
+			user.IsActive = status;
 
-            return userSAfterAdd.Entity;
+			UserDto userDto = user;
+			var afterChangedStatus = await UpdateUserAsync(userDto);
+			if (afterChangedStatus == null)
+				return null;
 
-        }
+			return afterChangedStatus;
+		}
+
+		public async Task<User> CreateUserAsync(CreateUserDto user)
+		{
+			if (user.FullName == null)
+				return null;
+
+			var userSAfterAdd = await _dbContext.Users.AddAsync(new User
+			{
+				FullName = user.FullName,
+				IsActive = false,
+				CreatedTime = DateTime.Now,
+				UpdatedTime = DateTime.MinValue,
+			});
+
+			await _dbContext.SaveChangesAsync();
+
+			return userSAfterAdd.Entity;
+
+		}
 
 		public async Task<List<User>> GetAllActiveUsersAsync()
 		{
-            return await _dbContext.Users.Where(u => u.IsActive).ToListAsync();
+			return await _dbContext.Users.Where(u => u.IsActive == true).ToListAsync();
 		}
 
 		public async Task<List<User>> GetAllUsersAsync()
-        {
-            return await _dbContext.Users.ToListAsync();
-        }
+		{
+			return await _dbContext.Users.ToListAsync();
+		}
 
 		public async Task<User> GetUserByIdAsync(Guid id)
 		{
-            if (id == Guid.Empty)
-                return null;
+			if (id == Guid.Empty)
+				return null;
 
-            var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == id);
-            if (user == null)
-                return null;
+			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == id);
+			if (user == null)
+				return null;
 
-            return user;
+			return user;
 		}
 
 		public async Task<User> UpdateUserAsync(UserDto user)
 		{
-            if (user.FullName == null)
-                return null;
+			if (user.FullName == null)
+				return null;
 
-            if (user.Id == Guid.Empty)
-                return null;
+			if (user.Id == Guid.Empty)
+				return null;
 
-            var userFromFDb = await GetUserByIdAsync(user.Id);
-            if (userFromFDb == null)
-                return null;
+			var userFromFDb = await GetUserByIdAsync(user.Id);
+			if (userFromFDb == null)
+				return null;
 
 			userFromFDb.FullName = user.FullName;
-            userFromFDb.UpdatedTime = DateTime.Now;
+			userFromFDb.UpdatedTime = DateTime.Now;
 
-            var userForReturn = _dbContext.Users.Update(userFromFDb);
+			var userForReturn = _dbContext.Users.Update(userFromFDb);
 
-            await _dbContext.SaveChangesAsync();
+			await _dbContext.SaveChangesAsync();
 
-            return userForReturn.Entity;
+			return userForReturn.Entity;
 
 		}
 	}

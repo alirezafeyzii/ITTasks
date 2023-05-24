@@ -16,6 +16,9 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 using ITTasks.Services.Sprints;
 using ITTasks.Models.DTOS.Tasks.TasksType;
 using ITTasks.Models.DTOS.Tasks.GetAndUpdate;
+using ITTasks.Statics;
+using System.Threading.Tasks;
+using ITTasks.Models.DTOS.Reports.Reporting;
 
 namespace ITTasks.Controllers
 {
@@ -41,7 +44,7 @@ namespace ITTasks.Controllers
 		{
 			var param = new TaskParameters { PageNumber = pageNumber };
 
-			var users = await _userService.GetAllUsersAsync();
+			var users = await _userService.GetAllActiveUsersAsync();
 
 			var allTaskType = await _taskTypeService.GetAllAsync();
 
@@ -89,10 +92,33 @@ namespace ITTasks.Controllers
 
 			if (taskFromService.ErrorCode != (int)ErrorCodes.NoError)
 			{
+				if(taskFromService.ErrorCode == (int)ErrorCodes.ConflictTask)
+				{
+					var builder = new TagBuilder("a");
+					builder.MergeAttribute("href", "/Tasks/GetTask?id="+Guid.Parse(taskFromService.ErrorMessage));
+					builder.MergeAttribute("class", "setPage");
+					string a()
+					{
+						using (var sw = new System.IO.StringWriter())
+						{
+							builder.WriteTo(sw, System.Text.Encodings.Web.HtmlEncoder.Default);
+							return sw.ToString().Replace("><","> این<");
+						}
+					}
+					var aaa = $"تسک با {a()}  اطلاعات قبلا قبت شده ";
+					ViewBag.ErrorMessage = aaa;
+					task.Sprints = allSprint;
+					task.ITTaskTypes = allTaskTypes;
+					task.ITTasks = allTasks;
+					task.pageInfo = allTasks.FirstOrDefault().PageInfo;
+					return View(task);
+				}
+
 				ViewBag.ErrorMessage = taskFromService.ErrorMessage;
 				task.Sprints = allSprint;
 				task.ITTaskTypes = allTaskTypes;
 				task.ITTasks = allTasks;
+				task.pageInfo = allTasks.FirstOrDefault().PageInfo;
 				return View(task);
 			}
 
@@ -137,6 +163,7 @@ namespace ITTasks.Controllers
 		{
 			var tasks = await _taskService.GetAllWithOutPaging();
 
+			var users = await _userService.GetAllActiveUsersAsync();
 
 
 			var stream = new MemoryStream();
@@ -151,7 +178,7 @@ namespace ITTasks.Controllers
 				worksheet.View.RightToLeft = true;
 
 				worksheet.Cells["A1"].Value = "اکسل تسک های خارج از اسپرینت IT";
-				using (var r = worksheet.Cells["A1:G1"])
+				using (var r = worksheet.Cells["A1:L1"])
 				{
 					r.Merge = true;
 					r.Style.Font.Color.SetColor(Color.White);
@@ -162,15 +189,26 @@ namespace ITTasks.Controllers
 
 				worksheet.Cells["A4"].Value = "نام کاربر";
 				worksheet.Cells["B4"].Value = "تاریخ";
-				worksheet.Cells["c4"].Value = "مقدار ساعت";
-				worksheet.Cells["D4"].Value = "نوع تسک";
-				worksheet.Cells["E4"].Value = "اسپرینت";
-				worksheet.Cells["F4"].Value = "توضیحات";
-				worksheet.Cells["A4:G4"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-				worksheet.Cells["A4:G4"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
-				worksheet.Cells["A4:G4"].Style.Font.Bold = true;
-				worksheet.Cells["A4:G4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-				worksheet.Cells["A4:G4"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+				worksheet.Cells["c4"].Value = "مدت";
+				worksheet.Cells["D4"].Value = "واحد ";
+				worksheet.Cells["E4"].Value = "نوع تسک";
+				worksheet.Cells["F4"].Value = "اسپرینت";
+				worksheet.Cells["G4"].Value = "توضیحات";
+				worksheet.Cells["A4:H4"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+				worksheet.Cells["A4:H4"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
+				worksheet.Cells["A4:H4"].Style.Font.Bold = true;
+				worksheet.Cells["A4:H4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+				worksheet.Cells["A4:H4"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+				
+				worksheet.Cells["J4"].Value = "تعداد تسک";
+				worksheet.Cells["K4"].Value = "مدت";
+				worksheet.Cells["L4"].Value = "نام کاربر";
+				worksheet.Cells["J4:L4"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+				worksheet.Cells["J4:L4"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(166, 181, 91));
+				worksheet.Cells["J4:L4"].Style.Font.Bold = true;
+				worksheet.Cells["J4:L4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+				worksheet.Cells["J4:L4"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
 				row = 5;
 				foreach (var task in tasks)
@@ -182,23 +220,55 @@ namespace ITTasks.Controllers
 					worksheet.Cells[row, 2].Value = DateTimeExtention.ToPersianWithOutTime(task.Date);
 					worksheet.Cells[row, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 3].Value = task.HourAmount;
+					worksheet.Cells[row, 3].Value = task.Duration.ToStandardTime();
 					worksheet.Cells[row, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 4].Value = task.TaskType.Title;
+					worksheet.Cells[row, 4].Value = UnitsTypes.keyValues.FirstOrDefault(x =>x.Key == task.UnitId).Value;
 					worksheet.Cells[row, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 5].Value = task.Sprint.Title;
+					worksheet.Cells[row, 5].Value = task.TaskType.Title;
 					worksheet.Cells[row, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 6, row, 7].Value = task.Description;
-					worksheet.Cells[row, 6, row, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-					worksheet.Cells[row, 6, row, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 6, row, 7].Style.WrapText = true;
-					worksheet.Cells[row, 6, row, 7].Merge = true;
+					worksheet.Cells[row, 6].Value = task.Sprint.Title;
+					worksheet.Cells[row, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+					worksheet.Cells[row, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+					worksheet.Cells[row, 7, row, 8].Value = task.Description;
+					worksheet.Cells[row, 7, row, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+					worksheet.Cells[row, 7, row, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+					worksheet.Cells[row, 7, row, 8].Style.WrapText = true;
+					worksheet.Cells[row, 7, row, 8].Merge = true;
+
 
 					row++;
 				}
+
+				var rowu = 5;
+
+				foreach (var user in users)
+				{
+					var ids = new List<string>();
+					var tasksForUser = await _taskService.GetAllTaskForUserAsync(user.Id,ids);
+
+					var d = 0;
+
+					foreach (var tsk4user in tasksForUser)
+					{
+						d += tsk4user.Duration;
+					}
+
+					worksheet.Cells[rowu, 10].Value = tasksForUser.Count;
+					worksheet.Cells[rowu, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+					worksheet.Cells[rowu, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+					worksheet.Cells[rowu, 11].Value = d.ToStandardTime();
+					worksheet.Cells[rowu, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+					worksheet.Cells[rowu, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+					worksheet.Cells[rowu, 12].Value = user.FullName;
+					worksheet.Cells[rowu, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+					worksheet.Cells[rowu, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+					rowu++;
+				}
+
 				xlPackage.Workbook.Properties.Title = "Task List";
 				xlPackage.Workbook.Properties.Author = "mehbang/AlirezaFeyzi";
 				xlPackage.Workbook.Properties.Subject = "All Task";
@@ -206,11 +276,11 @@ namespace ITTasks.Controllers
 			}
 			stream.Position = 0;
 			return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "AllTask.xlsx");
+			
 		}
-		public async Task<IActionResult> AllTask(int pageNumber = 1)
+		public async Task<IActionResult> AllTask(TaskParameters param,int pageNumber = 1)
 		{
 			var allTasks = await _taskService.GetAllTasksAsync(new TaskParameters { PageNumber = pageNumber });
-
 			return View(allTasks);
 		}
 		public async Task<IActionResult> CreateTaskType()
@@ -252,7 +322,7 @@ namespace ITTasks.Controllers
 
 			var allSprint = await _sprintService.GetAllAsync();
 
-			return View(new GetAndUpdateTaskDto
+			return PartialView("_UpdateTaskPatial",new GetAndUpdateTaskDto
 			{
 				Task = new ITTaskUpdateDto
 				{
@@ -260,7 +330,7 @@ namespace ITTasks.Controllers
 					TaskTypeId = task.TaskType.Id,
 					SprintId = task.Sprint.Id,
 					Date = DateTimeOffset.Now.ToUnixTimeSeconds(),
-					HourAmount = task.HourAmount,
+					Duration = task.Duration,
 					Description = task.Description,
 				},
 				TaskTypes = allTaskType,
@@ -296,5 +366,17 @@ namespace ITTasks.Controllers
 			return BadRequest();
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> GetTask(Guid id)
+		{
+			if (id == Guid.Empty)
+				return RedirectToAction("AllTask");
+
+			var task = await _taskService.GetTaskByIdAsync(id);
+			if(task == null)
+				return RedirectToAction("AllTask");
+			return PartialView("_GetTaskPartial",task);
+		}
+		
 	}
 }

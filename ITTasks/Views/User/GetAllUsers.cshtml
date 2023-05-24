@@ -2,7 +2,12 @@
 @model List<UserDto>
 
 
-
+	<style>
+		.form-check .form-check-input {
+    float: right;
+    margin-left: -1.5em;
+}
+	</style>
 
 
 <div class="container mt-3">
@@ -20,7 +25,11 @@
 			{
 				<tr>
 					<td>@user.FullName</td>
-					<td>@user.IsActive</td>
+					<td>
+						<div class="form-check form-switch">
+                        <input class="form-check-input btn-status" data-id="@user.Id" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked="@user.IsActive" >
+                       </div
+                    </td>
 					<td>@user.CreatedTime.ToShortDateString()</td>
 					<td>@user.CreatedTime.TimeOfDay</td>
 				</tr>
@@ -28,3 +37,49 @@
 		</tbody>
 	</table>
 </div>
+
+
+
+@section Scripts {
+
+			<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
+			<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+			<script type="text/javascript" src="~/lib/data-tables/datatables.min.js"></script>
+			<script type="text/javascript" src="~/assets/js/datatable.js"></script>
+			@{
+				await Html.RenderPartialAsync("_ValidationScriptsPartial");
+			}
+
+			<script type="text/javascript">
+				
+				var id = ""
+
+				$(".btn-status").hover(function(){
+					var status = $(this).is(':checked');
+
+					if(status == true){
+						document.getElementById("flexSwitchCheckChecked").title = "فعال";
+					}
+					else{
+						document.getElementById("flexSwitchCheckChecked").title = "غیر فعال";
+					}
+				})
+
+				$(".btn-status").on("click", function () {
+					id = $(this).data("id");
+
+					var status = $(this).is(':checked');
+
+					$.ajax({
+						type: "POST",
+                        url: "/User/ChangeStatus/"+id +"/" + status,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+					}).done(function (result) {
+					});
+
+				}
+				);
+			</script>
+		}
