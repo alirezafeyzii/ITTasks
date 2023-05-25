@@ -36,7 +36,19 @@
 			/// <summary>
 			/// فناوری اطلاعات
 			/// </summary>
-			IT = 8
+			IT = 8,
+			/// <summary>
+			/// سایر
+			/// </summary>
+			Other = 9,
+			/// <summary>
+			/// کارخانه
+			/// </summary>
+			Factory = 10,
+			/// <summary>
+			/// کارخانه
+			/// </summary>
+			Accounting = 11,
 		}
 
 		public static readonly Dictionary<int, string> keyValues = new Dictionary<int, string>()
@@ -49,6 +61,9 @@
 			{ (int)UnitIds.RAndD,"تحقیق و توسعه"},
 			{ (int)UnitIds.Xima,"زیما"},
 			{ (int)UnitIds.Services,"خدمات"},
+			{ (int)UnitIds.Other,"سایر"},
+			{ (int)UnitIds.Factory,"کارخانه"},
+			{ (int)UnitIds.Accounting,"حسابداری"},
 		};
 
 		public static string GetUnitName(this int id)

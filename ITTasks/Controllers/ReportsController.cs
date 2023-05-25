@@ -55,7 +55,7 @@ namespace ITTasks.Controllers
 					Users = users,
 					ITTasks = allTasks,
 					ITTaskTypes = allTaskType,
-					Sprints = allSprint
+					Sprints = allSprint.Any() ? allSprint : new List<Models.DTOS.Sprints.SprintDto>(),
 				};
 				return View(viewModel);
 			}
@@ -207,7 +207,7 @@ namespace ITTasks.Controllers
 			{
 				file.FileStream.CopyTo(strm);
 			}
-			var url = "https://localhost:7180/ExcelFiles/" + uniquFileName;
+			var url = $"{Urls.BaseUrl}/ExcelFiles/" + uniquFileName;
 			return url;
 		}
 		[HttpPost("/Repots/GetTasksExcelUrl")]

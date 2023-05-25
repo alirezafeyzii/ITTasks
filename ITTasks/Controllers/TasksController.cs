@@ -105,7 +105,7 @@ namespace ITTasks.Controllers
 							return sw.ToString().Replace("><","> این<");
 						}
 					}
-					var aaa = $"تسک با {a()}  اطلاعات قبلا قبت شده ";
+					var aaa = $"تسک با {a()}  اطلاعات قبلا ثبت شده ";
 					ViewBag.ErrorMessage = aaa;
 					task.Sprints = allSprint;
 					task.ITTaskTypes = allTaskTypes;
@@ -318,7 +318,7 @@ namespace ITTasks.Controllers
 
 			var allTaskType = await _taskTypeService.GetAllAsync();
 
-			var allUser = await _userService.GetAllUsersAsync();
+			var allUser = await _userService.GetAllActiveUsersAsync();
 
 			var allSprint = await _sprintService.GetAllAsync();
 

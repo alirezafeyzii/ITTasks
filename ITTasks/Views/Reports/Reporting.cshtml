@@ -3,6 +3,9 @@
 @using System.Data;
 @using ChartDirector;
 
+@{
+	int xxx = 0;
+}
 
 @section Styles{
 	<link rel="stylesheet" type="text/css" href="~/lib/datatables/datatables.min.css" />
@@ -17,6 +20,7 @@
 <style>
 	body {
 		background-color: #fbfbfb;
+		overflow-x: hidden;
 	}
 
 
@@ -37,42 +41,42 @@
 	}
 
 	/*select,
-				.select2 {
-					width: auto;
-					margin: 0 auto;
-					border-radius: 0 !important;
-					display: block;
-				}
+					.select2 {
+						width: auto;
+						margin: 0 auto;
+						border-radius: 0 !important;
+						display: block;
+					}
 
-				.select2-container .select2-selection {
-					height: 60px;
-					overflow: scroll;
-				}
+					.select2-container .select2-selection {
+						height: 60px;
+						overflow: scroll;
+					}
 
-				.select2-container--default .select2-selection--multiple {
-					border-radius: 0;
-					line-height: 30px;
-					font-size: 14px;
-					border: 1px solid #fafafa;
-				}
+					.select2-container--default .select2-selection--multiple {
+						border-radius: 0;
+						line-height: 30px;
+						font-size: 14px;
+						border: 1px solid #fafafa;
+					}
 
-				form {
-					background: #f0f0f0;
-					padding: 20px 0;
-					width: 100%;
-				}
+					form {
+						background: #f0f0f0;
+						padding: 20px 0;
+						width: 100%;
+					}
 
-				button {
-					width: 90%;
-					margin: 20px auto 0;
-					line-height: 30px;
-					border-radius: 0;
-					background: #fab100;
-					display: block;
-					border: none;
-					color: #ffffff;
-					font-size: 14px;
-				}*/
+					button {
+						width: 90%;
+						margin: 20px auto 0;
+						line-height: 30px;
+						border-radius: 0;
+						background: #fab100;
+						display: block;
+						border: none;
+						color: #ffffff;
+						font-size: 14px;
+					}*/
 	.select2-container .select2-selection {
 		height: 20px;
 		overflow: auto;
@@ -128,8 +132,8 @@
 		border-radius: 30px;
 	}
 
-	.margin-auto{
-		margin:auto;
+	.margin-auto {
+		margin: auto;
 	}
 </style>
 
@@ -144,40 +148,43 @@
 <div class="container-fluid pt-4  d-flex flex-row flex-wrap">
 
 
-	<div class="col-12 vh-30">
-        @*@{
-			var myChart = new XYChart(450,450).
-            .AddTitle("Chart Title")
-			.AddSeries(
-			name: "Employee",
-			xValue: new[] { "Peter", "Andrew", "Julie", "Mary", "Dave" },
-			yValues: new[] { "2", "6", "4", "5", "3" })
-			.Write();
+	<div class="col-12 vh-30 d-flex justify-content-end mb-5">
+		@*@{
+		var myChart = new XYChart(450,450).
+		.AddTitle("Chart Title")
+		.AddSeries(
+		name: "Employee",
+		xValue: new[] { "Peter", "Andrew", "Julie", "Mary", "Dave" },
+		yValues: new[] { "2", "6", "4", "5", "3" })
+		.Write();
 		}*@
-		<table class="columns margin-auto">
-			<tr>
-				<td><div id="piechart_div" style="border: 1px solid #ccc"></div></td>
-				<td><div id="piechart_div_un" style="border: 1px solid #ccc"></div></td>
-				<td><div id="column_div_u" style="border: 1px solid #ccc"></div></td>
-				<td><div id="barchart_div" style="border: 1px solid #ccc"></div></td>
-				
-			</tr>
-		</table>
+		<div id="piechart_div" class="mx-2"></div>
+		<div id="piechart_div_un" class="mx-2"></div>
+		<div id="column_div_u" class="mx-2"></div>
+		<div id="barchart_div" class="mx-2"></div>
+
 	</div>
 
-	<div class="col-3">
+	<div class="col-2">
 		<nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white border-radius-5 vh-50">
 			<div class="position-sticky">
-				<div class="list-group list-group-flush mx-3 mt-4">
+				<div class="list-group list-group-flush mx-3 mt-3">
 					<a href="/Reports/Reporting" class="list-group-item list-group-item-action py-2 ripple active my-1">
 						<i class="fas fa-chart-area fa-fw me-3"></i><span>گزارش گیری</span>
 					</a>
 
-
-					<label class="small opacity-75 my-1">اسپرینت</label>
-					<select id="floatingSelect" class="js-example-basic-multiple js-example-tokenizer" name="states[]" multiple="multiple" style="overflow:auto"
+					@if (Model.Sprints.Any())
+					{
+						<label class="small opacity-75 my-1">اسپرینت</label>
+						<select id="floatingSelect" class="js-example-basic-multiple js-example-tokenizer" name="states[]" multiple="multiple" style="overflow:auto"
 							asp-for="SprintId" asp-items="@(new SelectList(Model.Sprints.AsEnumerable(),"Id","Title",Model.SprintId))">
-					</select>
+						</select>
+					}
+					else
+					{
+						<label class="small opacity-75 my-1">اسپرینت</label>
+						
+					}
 
 
 
@@ -198,17 +205,18 @@
 						<i class="fas fa-building fa-fw me-3"></i><span>تا تاریخ</span>
 					</a>
 					<a href="#" class="list-group-item list-group-item-action py-2 ripple">
-						<button id="excel-btn" class="btn btn-warning">خروجی اکسل
+						<button id="excel-btn" class="btn btn-warning">
+							خروجی اکسل
 						</button>
-						</a>
-					
+					</a>
+
 				</div>
 			</div>
 		</nav>
 	</div>
-	<div id="report-content" class="col-9 border-radius-5">
+	<div id="report-content" class="col-10 border-radius-5">
 	</div>
-	
+
 
 </div>
 
@@ -223,12 +231,13 @@
 
 	<script type="text/javascript">
 
+
 		$("#floatingSelect").on("change", function () {
 			search();
 
 		})
 
-		$("#excel-btn").on("click", function(){
+		$("#excel-btn").on("click", function () {
 			let mydata = {
 				sprintIds: $("#floatingSelect").val()
 			}
@@ -300,6 +309,12 @@
 		})
 
 		$(document).ready(function () {
+
+			if ('@(Model.Sprints != null && Model.Sprints.Count != 0)' == 'True') {
+				$("#floatingSelect").val('@Model.Sprints?.LastOrDefault()?.Id').change();
+			}
+
+
 
 			$.ajax({
 				type: 'GET',
@@ -402,7 +417,7 @@
 				console.log(result);
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'UserName');
-				data.addColumn('number', 'wet4rf');
+				data.addColumn('number', 'جمع ساعت');
 				var dataArray = [];
 				$.each(result.usersReport, function (i, obj) {
 					console.log(obj)
