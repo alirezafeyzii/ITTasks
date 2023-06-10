@@ -43,6 +43,16 @@ namespace ITTasks.Services.Sprints
 				};
 			}
 
+			var sprintExists = await _sprintRepository.GetByTitleAsync(sprint.Title);
+			if(sprintExists != null)
+			{
+				return new SprintDto
+				{
+					ErrorCode = (int)ErrorCodes.ConflictSprint,
+					ErrorMessage = ErrorMessages.ConflictSprint
+				};
+			}
+
 			var sprintFromRepo = await _sprintRepository.CreateAsync(sprint, startDate, endDate);
 
 			if(sprintFromRepo == null)
@@ -84,6 +94,49 @@ namespace ITTasks.Services.Sprints
 			}
 
 			return sprintGroup;
+		}
+
+		public async Task<SprintDto> GetByTitleAsync(string title)
+		{
+			try
+			{
+				if(title == null)
+				{
+					return new SprintDto
+					{
+						ErrorCode = (int)ErrorCodes.NullObjectError,
+						ErrorMessage = ErrorMessages.NullInputParameters
+					};
+				}
+
+				var sprint = await _sprintRepository.GetByTitleAsync(title);
+				if(sprint == null)
+				{
+					return new SprintDto
+					{
+						ErrorCode = (int)ErrorCodes.SprintNotFound,
+						ErrorMessage = ErrorMessages.SprintNotFound
+					};
+				}
+
+				return new SprintDto
+				{
+					Id = sprint.Id,
+					Title = sprint.Title,
+					StringStartDate = DateTimeExtention.ToPersianWithOutTime(sprint.StartDate),
+					StringEndDate = DateTimeExtention.ToPersianWithOutTime(sprint.EndDate),
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
+				};
+			}
+			catch (Exception)
+			{
+				return new SprintDto
+				{
+					ErrorCode = (int)ErrorCodes.DatabaseError,
+					ErrorMessage = ErrorMessages.DatabaseError
+				};
+			}
 		}
 	}
 }

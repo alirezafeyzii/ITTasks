@@ -1,0 +1,91 @@
+﻿@using ITTasks.Models.DTOS.Auth;
+@model LoginDto
+
+
+
+<form asp-action="Login" asp-controller="Auth" method="post">
+	<div class="mb-3">
+		<div class="mb-3 col-3">
+			<label class="form-label">نام کاربر </label>
+			<input asp-for="UserName" class="form-control">
+			<span asp-validation-for="UserName"></span>
+		</div>
+	</div>
+	<div class="mb-3">
+		<div class="mb-3 col-3">
+			<label class="form-label">رمز </label>
+			<input asp-for="Password" class="form-control">
+			<span asp-validation-for="Password"></span>
+		</div>
+	</div>
+	<input type="submit" class="btn btn-outline-success" value="ورود" /><br/>
+	<span class="text-danger">@ViewBag.ErrorMessage</span>
+</form>
+
+
+@section Scripts {
+	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
+	<script type="text/javascript" src="~/js/datatable.js"></script>
+	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
+	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="sweetalert2.min.js"></script>
+	<link rel="stylesheet" href="sweetalert2.min.css">
+
+
+
+	<script type="text/javascript">
+
+
+
+
+
+		$("#sub").on("click", function () {
+			let mydata = {
+				userName: $("#un").val(),
+				password: $("#pd").val()
+			}
+
+
+			let json = JSON.stringify(mydata);
+
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:5000/api/Authenticate/Login",
+				data: json,
+				contentType: 'application/json; charset=utf-8',
+				success: function (data) {
+					console.log('loginsss')
+					tk(data.token)
+					//alert("wojej")
+				},
+				error: function (err) {
+					alert("error");
+				}
+			});
+		})
+
+
+		function tk(token) {
+			//$.ajax({
+			//	type: "GET",
+			//	//url: "/Auth/SignIn",
+			//	url: "/Auth/a",
+			//	contentType: 'application/json; charset=utf-8',
+			//	headers: { 'Authorization': 'Bearer ' + token }
+			//	,
+			//	success: function (tkn) {
+			//		console.log('login')
+
+			//		//window.open("https://localhost:7180/admin/panel")
+			//	},
+			//	error: function (dta){
+			//		console.log(dta);
+			//	}
+			//})
+
+			//window.location.replace("/admin/panel/" + token);
+			window.location.replace("http://localhost:5000/api/Authenticate/CheckTokenn/" + token);
+		}
+	</script>
+	}

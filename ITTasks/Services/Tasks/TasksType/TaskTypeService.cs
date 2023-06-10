@@ -27,6 +27,16 @@ namespace ITTasks.Services.Tasks.TasksType
 					};
 				}
 
+				var taskTypeExists = await _taskTypeRepository.GetByTitleAsync(taskType.Title);
+				if (taskTypeExists != null)
+				{
+					return new ITTaskTypeDto
+					{
+						ErrorCode = (int)ErrorCodes.ConflictTaskType,
+						ErrorMessage = ErrorMessages.ConflictTaskType
+					};
+				}
+
 				var taskTypeFromRepo = await _taskTypeRepository.CreateAsync(taskType);
 
 				if (taskTypeFromRepo == null)
@@ -89,5 +99,48 @@ namespace ITTasks.Services.Tasks.TasksType
 
 			return taskTypeGroup;
         }
+
+		public async Task<ITTaskTypeDto> GetByTitleAsync(string title)
+		{
+			try
+			{
+				if(title == null)
+				{
+					return new ITTaskTypeDto
+					{
+						ErrorCode = (int)ErrorCodes.NullObjectError,
+						ErrorMessage = ErrorMessages.NullInputParameters
+					};
+				}
+
+				var taskType = await _taskTypeRepository.GetByTitleAsync(title);
+				if(taskType == null)
+				{
+					return new ITTaskTypeDto
+					{
+						ErrorCode = (int)ErrorCodes.TaskTypeNotFound,
+						ErrorMessage = ErrorMessages.TaskTypeNotFound
+					};
+				}
+
+				return new ITTaskTypeDto
+				{
+					Id = taskType.Id,
+					Title = taskType.Title,
+					CreateTime = taskType.CreatedDate,
+					UpdateTime = taskType.UpdatedDate,
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
+				};
+			}
+			catch (Exception)
+			{
+				return new ITTaskTypeDto
+				{
+					ErrorCode = (int)ErrorCodes.DatabaseError,
+					ErrorMessage = ErrorMessages.DatabaseError
+				};
+			}
+		}
 	}
 }

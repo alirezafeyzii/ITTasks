@@ -8,6 +8,7 @@
 			<span asp-validation-for="FullName"></span>
 		</div>
 		<input type="submit" class="btn btn-outline-success" value="ثبت" />
-		@ViewBag.Successful
-		@ViewBag.ErrorMessage
+		<br />
+		<span class="text-success">@ViewBag.Successful</span>
+		<span class="text-danger">@ViewBag.ErrorMessage</span>
 </form>

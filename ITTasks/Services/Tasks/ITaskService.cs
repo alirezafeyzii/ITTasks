@@ -12,11 +12,11 @@ namespace ITTasks.Services.Tasks
         public Task<ITTaskDto> CreateTaskAsync(ITTaskCreateDto task);
         public Task<List<ITTaskDto>> GetAllTasksAsync(TaskParameters param);
         public Task<bool> DeleteTaskAsync(Guid id);
-        public Task<List<ITTaskDto>> GetAllWithOutPaging();
+        public Task<List<ITTaskDto>> GetAllWithOutPagingAsync();
         public Task<ITTaskDto> UpdateTaskAsync(ITTaskUpdateDto task);
         public Task<ITTaskDto> GetTaskByIdAsync(Guid id);
         public Task<List<ITTaskDto>> GetAllTaskForUserAsync(Guid id, List<string> sprintIds);
 		public Task<List<ITTaskDto>> GetTasksForReportingAsync(ReportingSearchDto searchRequest);
-        public Task<ReportViewModel> GetReporting();
+        public Task<ReportViewModel> GetReportingAsync();
 	}
 }

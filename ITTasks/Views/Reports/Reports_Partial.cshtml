@@ -2,21 +2,23 @@
 @model List<ITTaskDto>
 
 
-@section Styles{
-
+	@section styles{
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
 	@*<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />*@
 
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="~/lib/datatables/datatables.min.css" />
-}
+	}
+
+
+
+
 
 <style>
 	.bg-gray-custom {
-		background: rgba(239,239,234,1);
 		padding: 10px;
-		overflow:auto;
+		overflow: auto;
 	}
 
 	.border-radius-5 {
@@ -42,6 +44,29 @@
 	.border-radius-30 {
 		border-radius: 30px;
 	}
+
+	td {
+		width: 20ch;
+		max-width: 30ch;
+		word-wrap: break-word;
+	}
+	.overflow-dotted {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	div.dataTables_wrapper div.dataTables_filter input {
+		margin-left: 0.5em;
+		display: inline-block;
+		width: 400px;
+	}
+
+	div.dataTables_wrapper div.dataTables_filter {
+		text-align: left;
+	}
+
+
 	
 </style>
 
@@ -65,8 +90,6 @@
 					<th>اسپرینت</th>
 					<th>نوع تسک</th>
 					<th>توضیحات</th>
-					<th></th>
-					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -88,7 +111,6 @@
 						<td>@task.Sprint.Title</td>
 						<td>@task.TaskType.Title</td>
 						<td class="overflow-dotted" title="@task.Description">@task.Description</td>
-
 					</tr>
 				}
 
@@ -98,14 +120,16 @@
 </div>
 
 
-@section Scripts {
-	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
-	<script type="text/javascript" src="~/js/datatable.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-	<script type="text/javascript">
-		//$(document).ready(function () {
-		//	$('#MyTable1').DataTable();
-		//});
-	</script>
-}
+
+<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="~/js/datatable.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		//$("#MyTable1").removeClass("collapsed");
+	});
+</script>
+
+
 

@@ -7,5 +7,6 @@ namespace ITTasks.Services.Sprints
 	{
 		public Task<SprintDto> CreateAsync(CreateSprintDto sprint);
 		public Task<List<SprintDto>> GetAllAsync();
+		public Task<SprintDto> GetByTitleAsync(string title);
 	}
 }

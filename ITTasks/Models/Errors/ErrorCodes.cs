@@ -10,6 +10,12 @@
 		UserFullNameError,
 		UserIdError,
 		UserNotFound,
-		ConflictTask
+		ConflictTask,
+		ConflictSprint,
+		ConflictUser,
+		ConflictTaskType,
+		TaskTypeNotFound,
+		SprintNotFound
+
 	}
 }

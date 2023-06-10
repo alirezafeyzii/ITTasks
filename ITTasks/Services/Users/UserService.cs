@@ -63,6 +63,16 @@ namespace ITTasks.Services.Users
 					};
 				}
 
+				var userExists = await _userRepository.GetUserByNameAsync(user.FullName);
+				if (userExists != null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.ConflictUser,
+						ErrorMessage = ErrorMessages.ConflictUser
+					};
+				}
+
 				var userFromRepo = await _userRepository.CreateUserAsync(user);
 
 				if (userFromRepo == null)
@@ -167,6 +177,8 @@ namespace ITTasks.Services.Users
 					IsActive = user.IsActive,
 					CreatedTime = user.CreatedTime,
 					UpdatedTime = user.UpdatedTime,
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
 				};
 			}
 			catch (Exception)
@@ -175,6 +187,51 @@ namespace ITTasks.Services.Users
 				{
 					ErrorCode = (int)ErrorCodes.ServerError,
 					ErrorMessage = ErrorMessages.ServerError
+				};
+			}
+		}
+
+		public async Task<UserDto> GetUserByNameAsync(string name)
+		{
+			try
+			{
+				if (name == null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.NullObjectError,
+						ErrorMessage = ErrorMessages.NullInputParameters
+					};
+				}
+
+				var userFromRepo = await _userRepository.GetUserByNameAsync(name);
+				if (userFromRepo == null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.UserNotFound,
+						ErrorMessage = ErrorMessages.UserNotFound
+					};
+				}
+
+				return new UserDto
+				{
+					Id = userFromRepo.Id,
+					FullName = userFromRepo.FullName,
+					IsActive = userFromRepo.IsActive,
+					CreatedTime = userFromRepo.CreatedTime,
+					UpdatedTime= userFromRepo.UpdatedTime,
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
+				};
+			}
+
+			catch (Exception)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.DatabaseError,
+					ErrorMessage = ErrorMessages.DatabaseError
 				};
 			}
 		}
@@ -201,6 +258,25 @@ namespace ITTasks.Services.Users
 					};
 				}
 
+				if (user.Id == Guid.Empty)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.UserIdError,
+						ErrorMessage = ErrorMessages.UserIdError
+					};
+				}
+
+				var userExists = await _userRepository.GetUserByNameAsync(user.FullName);
+				if (userExists != null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.UserIdError,
+						ErrorMessage = ErrorMessages.UserIdError
+					};
+				}
+
 				var userFromRepo = await _userRepository.UpdateUserAsync(user);
 				if(userFromRepo == null)
 				{
@@ -215,6 +291,8 @@ namespace ITTasks.Services.Users
 				{
 					FullName = userFromRepo.FullName,
 					Id = userFromRepo.Id,
+					CreatedTime = userFromRepo.CreatedTime,
+					UpdatedTime = userFromRepo.UpdatedTime,
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError
 				};

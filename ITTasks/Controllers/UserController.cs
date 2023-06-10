@@ -30,9 +30,9 @@ namespace ITTasks.Controllers
 
             var userModel = await _userService.CreateUserAsync(user);
 
-            if (userModel == null)
+            if (userModel.ErrorCode != (int)ErrorCodes.NoError)
             {
-                ViewBag.ErrorMessage = "خطا";
+                ViewBag.ErrorMessage = userModel.ErrorMessage;
                 return View();
             }
 
@@ -40,10 +40,11 @@ namespace ITTasks.Controllers
             return View();
         }
 
+        [HttpGet("/User/GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
-            return View(users);
+            return PartialView("AllUser_Partial", users);
         }
 
         public async Task<IActionResult> UpdateUser()

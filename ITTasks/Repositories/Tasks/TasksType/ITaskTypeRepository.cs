@@ -10,5 +10,6 @@ namespace ITTasks.Repositories.Tasks.TasksType
 		public Task<List<ITTaskType>> GetAllAsync();
 		public Task<bool> DeleteAsync(Guid id);
 		public Task<ITTaskType> GetByIdAsync(Guid id);
+		public Task<ITTaskType> GetByTitleAsync(string title);
 	}
 }

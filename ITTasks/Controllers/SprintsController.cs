@@ -38,6 +38,11 @@ namespace ITTasks.Controllers
 			if(sprintFromRepo.ErrorCode != (int)ErrorCodes.NoError)
 			{
 				ViewBag.ErrorMessage = sprintFromRepo.ErrorMessage;
+				return View(new CreateSprintDto
+				{
+					EndDate = DateTimeOffset.Now.ToUnixTimeSeconds(),
+					StartDate = DateTimeOffset.Now.ToUnixTimeSeconds(),
+				});
 			}
 
 			ViewBag.Successful = "با موفقیت ثبت شد";
@@ -51,7 +56,7 @@ namespace ITTasks.Controllers
 		[Route("/sprint/GetAllSprints")]
 		public async Task<IActionResult> GetAllSprints()
 		{
-			var a = await _taskService.GetReporting();
+			var a = await _taskService.GetReportingAsync();
 			return Ok(a);
 		}
 	}

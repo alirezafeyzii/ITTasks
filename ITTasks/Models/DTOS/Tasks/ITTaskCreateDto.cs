@@ -42,5 +42,6 @@ namespace ITTasks.Models.DTOS.Tasks
 		[Required(ErrorMessage = "وارد کردن اسپرینت الزامی است")]
 		public Guid SprintId { get; set; }
         public List<SprintDto> Sprints { get; set; }
+        public IFormFile ExcelFile { get; set; }
 	}
 }

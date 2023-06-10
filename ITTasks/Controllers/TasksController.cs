@@ -19,6 +19,8 @@ using ITTasks.Models.DTOS.Tasks.GetAndUpdate;
 using ITTasks.Statics;
 using System.Threading.Tasks;
 using ITTasks.Models.DTOS.Reports.Reporting;
+using Microsoft.AspNetCore.Authorization;
+using System.IO;
 
 namespace ITTasks.Controllers
 {
@@ -28,18 +30,22 @@ namespace ITTasks.Controllers
 		private readonly ITaskService _taskService;
 		private readonly ITaskTypeService _taskTypeService;
 		private readonly ISprintService _sprintService;
+		private readonly IWebHostEnvironment _hostEnv;
 
 		public TasksController(IUserService userService,
 			ITaskService taskService,
 			ITaskTypeService taskTypeService,
-			ISprintService sprintService)
+			ISprintService sprintService,
+			IWebHostEnvironment hostEnv)
 		{
 			_userService = userService;
 			_taskService = taskService;
 			_taskTypeService = taskTypeService;
 			_sprintService = sprintService;
+			_hostEnv = hostEnv;
 		}
 
+		//[Authorize]
 		public async Task<IActionResult> CreateTask(int pageNumber = 1)
 		{
 			var param = new TaskParameters { PageNumber = pageNumber };
@@ -80,6 +86,9 @@ namespace ITTasks.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateTask(ITTaskCreateDto task)
 		{
+			if (task.ExcelFile != null)
+				RedirectToAction("salam");
+
 			var usersGroup = task.Users = await _userService.GetAllUsersAsync();
 
 			var allTaskTypes = task.ITTaskTypes = await _taskTypeService.GetAllAsync();
@@ -92,17 +101,17 @@ namespace ITTasks.Controllers
 
 			if (taskFromService.ErrorCode != (int)ErrorCodes.NoError)
 			{
-				if(taskFromService.ErrorCode == (int)ErrorCodes.ConflictTask)
+				if (taskFromService.ErrorCode == (int)ErrorCodes.ConflictTask)
 				{
 					var builder = new TagBuilder("a");
-					builder.MergeAttribute("href", "/Tasks/GetTask?id="+Guid.Parse(taskFromService.ErrorMessage));
+					builder.MergeAttribute("href", "/Tasks/GetTask?id=" + Guid.Parse(taskFromService.ErrorMessage));
 					builder.MergeAttribute("class", "setPage");
 					string a()
 					{
 						using (var sw = new System.IO.StringWriter())
 						{
 							builder.WriteTo(sw, System.Text.Encodings.Web.HtmlEncoder.Default);
-							return sw.ToString().Replace("><","> این<");
+							return sw.ToString().Replace("><", "> این<");
 						}
 					}
 					var aaa = $"تسک با {a()}  اطلاعات قبلا ثبت شده ";
@@ -146,7 +155,6 @@ namespace ITTasks.Controllers
 			return RedirectToAction("CreateTask");
 		}
 
-
 		[HttpPost("/Tasks/DeleteTask/{id}")]
 		public async Task<IActionResult> DeleteTask([FromRoute] string id)
 		{
@@ -161,7 +169,7 @@ namespace ITTasks.Controllers
 
 		public async Task<IActionResult> ExcelAllTask()
 		{
-			var tasks = await _taskService.GetAllWithOutPaging();
+			var tasks = await _taskService.GetAllWithOutPagingAsync();
 
 			var users = await _userService.GetAllActiveUsersAsync();
 
@@ -200,7 +208,7 @@ namespace ITTasks.Controllers
 				worksheet.Cells["A4:H4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 				worksheet.Cells["A4:H4"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-				
+
 				worksheet.Cells["J4"].Value = "تعداد تسک";
 				worksheet.Cells["K4"].Value = "مدت";
 				worksheet.Cells["L4"].Value = "نام کاربر";
@@ -223,7 +231,7 @@ namespace ITTasks.Controllers
 					worksheet.Cells[row, 3].Value = task.Duration.ToStandardTime();
 					worksheet.Cells[row, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 4].Value = UnitsTypes.keyValues.FirstOrDefault(x =>x.Key == task.UnitId).Value;
+					worksheet.Cells[row, 4].Value = UnitsTypes.keyValues.FirstOrDefault(x => x.Key == task.UnitId).Value;
 					worksheet.Cells[row, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 					worksheet.Cells[row, 5].Value = task.TaskType.Title;
@@ -247,7 +255,7 @@ namespace ITTasks.Controllers
 				foreach (var user in users)
 				{
 					var ids = new List<string>();
-					var tasksForUser = await _taskService.GetAllTaskForUserAsync(user.Id,ids);
+					var tasksForUser = await _taskService.GetAllTaskForUserAsync(user.Id, ids);
 
 					var d = 0;
 
@@ -276,9 +284,9 @@ namespace ITTasks.Controllers
 			}
 			stream.Position = 0;
 			return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "AllTask.xlsx");
-			
+
 		}
-		public async Task<IActionResult> AllTask(TaskParameters param,int pageNumber = 1)
+		public async Task<IActionResult> AllTask(TaskParameters param, int pageNumber = 1)
 		{
 			var allTasks = await _taskService.GetAllTasksAsync(new TaskParameters { PageNumber = pageNumber });
 			return View(allTasks);
@@ -322,7 +330,7 @@ namespace ITTasks.Controllers
 
 			var allSprint = await _sprintService.GetAllAsync();
 
-			return PartialView("_UpdateTaskPatial",new GetAndUpdateTaskDto
+			return PartialView("_UpdateTaskPatial", new GetAndUpdateTaskDto
 			{
 				Task = new ITTaskUpdateDto
 				{
@@ -373,10 +381,94 @@ namespace ITTasks.Controllers
 				return RedirectToAction("AllTask");
 
 			var task = await _taskService.GetTaskByIdAsync(id);
-			if(task == null)
+			if (task == null)
 				return RedirectToAction("AllTask");
-			return PartialView("_GetTaskPartial",task);
+			return PartialView("_GetTaskPartial", task);
 		}
-		
+
+		[HttpPost("/Tasks/CreateTaskExcel")]
+		public async Task<IActionResult> CreateTaskExcel(IFormFile file)
+		{
+			if (file.ContentType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+				return BadRequest(ExcelErrors.ExcelErrorMessages.ImportedFileIsNotExcel);
+
+			var stream = file.OpenReadStream();
+
+			using (var xlPackage = new ExcelPackage(stream))
+			{
+				var workSheet = xlPackage.Workbook.Worksheets.First();
+				var rowCount = workSheet.Dimension.Rows;
+
+				if (rowCount < 5)
+					return BadRequest(ExcelErrors.ExcelErrorMessages.TasksWasNotFound);
+
+				for (var row = 5; row <= rowCount; row++)
+				{
+					try
+					{
+						var userFullName = workSheet.Cells[row, 1].Value?.ToString();
+						var date = workSheet.Cells[row, 2].Value?.ToString();
+						var duration = workSheet.Cells[row, 3].Value?.ToString();
+						var unit = workSheet.Cells[row, 4].Value?.ToString();
+						var taskType = workSheet.Cells[row, 5].Value?.ToString();
+						var sprint = workSheet.Cells[row, 6].Value?.ToString();
+						var description = workSheet.Cells[row, 7].Value?.ToString();
+
+						var user = await _userService.GetUserByNameAsync(userFullName);
+						if (user.ErrorCode != (int)ErrorCodes.NoError)
+							return BadRequest(ExcelErrors.ExcelErrorHandling.ExcelErrorParams(ExcelErrors.ExcelErrorHandling.UserError, userFullName, row));
+
+						var dateTime = date.StnadardExcelDate();
+						if (dateTime == -1)
+							return BadRequest(ExcelErrors.ExcelErrorHandling.ExcelErrorParams(ExcelErrors.ExcelErrorHandling.DateFormatError,date,row));
+
+						var durationTime = duration.GetStandardMinutes();
+						if (durationTime == -1)
+							return BadRequest(ExcelErrors.ExcelErrorHandling.ExcelErrorParams(ExcelErrors.ExcelErrorHandling.DurationFormatError, duration, row));
+
+						var unitId = unit.GetUnitId();
+						if (unitId == -1 || unitId == 0)
+							return BadRequest(ExcelErrors.ExcelErrorHandling.ExcelErrorParams(ExcelErrors.ExcelErrorHandling.UnitError, unit, row));
+
+						var taskTypeExc = await _taskTypeService.GetByTitleAsync(taskType);
+						if (taskTypeExc.ErrorCode != (int)ErrorCodes.NoError)
+							return BadRequest(ExcelErrors.ExcelErrorHandling.ExcelErrorParams(ExcelErrors.ExcelErrorHandling.TaskTypeError, taskType, row));
+
+						var sprintExc = await _sprintService.GetByTitleAsync(sprint);
+						if (sprintExc.ErrorCode != (int)ErrorCodes.NoError)
+							return BadRequest(ExcelErrors.ExcelErrorHandling.ExcelErrorParams(ExcelErrors.ExcelErrorHandling.SprintError, sprint, row));
+
+						var taskFromService = await _taskService.CreateTaskAsync(new ITTaskCreateDto
+						{
+							UserId = user.Id.ToString(),
+							Date = dateTime,
+							UnitId = unitId,
+							TaskTypeId = taskTypeExc.Id,
+							SprintId = sprintExc.Id,
+							Description = description!,
+							Duration = durationTime,
+						});
+
+						if (taskFromService.ErrorCode != (int)ErrorCodes.NoError)
+							return BadRequest(taskFromService.ErrorMessage);
+					}
+					catch (Exception)
+					{
+						return BadRequest(ExcelErrors.ExcelErrorMessages.ServerError);
+					}
+				}
+			}
+			return Ok(ExcelErrors.ExcelErrorMessages.NoError);
+		}
+
+		public async Task<IActionResult> CreateTaskFile()
+		{
+
+			string path = Path.Combine(_hostEnv.WebRootPath, "ExcelFiles/") + "CreateTaskTemplate.xlsx";
+
+			var file = System.IO.File.ReadAllBytes(path);
+
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "CreateTaskTemplate.xlsx");
+		}
 	}
 }

@@ -16,9 +16,6 @@ namespace ITTasks.Repositories.Sprints
 
 		public async Task<Sprint> CreateAsync(CreateSprintDto sprint, DateTime startDate, DateTime endDate)
 		{
-			if (sprint.Title == null)
-				return null;
-
 			var sprintFromDb = await _dbContext.Sprints.AddAsync(new Sprint
 			{
 				Title = sprint.Title,
@@ -35,8 +32,16 @@ namespace ITTasks.Repositories.Sprints
 
 		public async Task<List<Sprint>> GetAllAsync()
 		{
-			var a = await _dbContext.Sprints.OrderByDescending(x => x.CreatedDate).ToListAsync();
-			return a;
+			return await _dbContext.Sprints.OrderByDescending(x => x.CreatedDate).ToListAsync();
+		}
+
+		public async Task<Sprint> GetByTitleAsync(string title)
+		{
+			var sprint = await _dbContext.Sprints.SingleOrDefaultAsync(x => x.Title.ToLower() == title.ToLower());
+			if (sprint == null)
+				return null;
+
+			return sprint;
 		}
 	}
 }

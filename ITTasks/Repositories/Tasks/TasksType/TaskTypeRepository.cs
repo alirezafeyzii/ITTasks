@@ -17,9 +17,6 @@ namespace ITTasks.Repositories.Tasks.TasksType
 
 		public async Task<ITTaskType> CreateAsync(ITTaskTypeCreateDto taskType)
 		{
-			if (taskType.Title == null)
-				return null;
-
 			var taskTypeAfterAdded = await _dbContext.TasksType.AddAsync(new ITTaskType
 			{
 				Title = taskType.Title,
@@ -34,9 +31,6 @@ namespace ITTasks.Repositories.Tasks.TasksType
 
 		public async Task<bool> DeleteAsync(Guid id)
 		{
-			if (id == Guid.Empty)
-				return false;
-
 			var taskType = await GetByIdAsync(id);
 			if (taskType == null)
 				return false;
@@ -55,10 +49,16 @@ namespace ITTasks.Repositories.Tasks.TasksType
 
 		public async Task<ITTaskType> GetByIdAsync(Guid id)
 		{
-			if (id == Guid.Empty)
+			var taskType = await _dbContext.TasksType.SingleOrDefaultAsync(tt => tt.Id == id);
+			if (taskType == null)
 				return null;
 
-			var taskType = await _dbContext.TasksType.SingleOrDefaultAsync(tt => tt.Id == id);
+			return taskType;
+		}
+
+		public async Task<ITTaskType> GetByTitleAsync(string title)
+		{
+			var taskType = await _dbContext.TasksType.SingleOrDefaultAsync(x => x.Title.ToLower() == title.ToLower());
 			if (taskType == null)
 				return null;
 

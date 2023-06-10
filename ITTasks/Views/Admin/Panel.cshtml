@@ -1,7 +1,175 @@
-﻿
-@{
-    ViewData["Title"] = "Panel";
+﻿@{
+	ViewData["Title"] = "Panel";
 }
 
-<h1>Panel</h1>
+<style>
+	.vh-20 {
+		height: 20vh;
+	}
+
+	.vh-30 {
+		height: 30vh;
+	}
+
+	.vh-40 {
+		height: 40vh;
+	}
+
+	.vh-50 {
+		height: 50vh;
+	}
+
+
+	#sidebarMenu {
+		width: 240px;
+		z-index: 600;
+		box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
+		direction: rtl;
+	}
+
+
+
+	.border-radius-5 {
+		border-radius: 5px;
+	}
+
+	.border-radius-10 {
+		border-radius: 10px;
+	}
+
+	.border-radius-15 {
+		border-radius: 15px;
+	}
+
+	.border-radius-20 {
+		border-radius: 20px;
+	}
+
+	.border-radius-25 {
+		border-radius: 25px;
+	}
+
+	.border-radius-30 {
+		border-radius: 30px;
+	}
+
+	.margin-auto {
+		margin: auto;
+	}
+
+	.dropdown {
+		margin-bottom: 5px;
+	}
+</style>
+
+<div class="container-fluid pt-4  d-flex flex-row flex-wrap">
+	<div class="col-2">
+		<nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white border-radius-5 vh-30 ">
+			<div class="position-sticky">
+				<div class="list-group list-group-flush mx-3 mt-3 border-radius-5">
+					<a href="/Reports/Reporting" class="list-group-item list-group-item-action  py-2 ripple active my-1 ">
+						<i class="fas fa-chart-area fa-fw me-3"></i><span>پنل ادمین</span>
+					</a>
+					@*<a href="#" class="list-group-item list-group-item-action py-2 ripple">
+					<i class="fas fa-chart-line fa-fw me-3"></i><span>واحد</span>
+					</a>*@
+					@*<div class="dropdown">
+						<span class="btn btn-secondary dropdown-toggle list-group-item list-group-item-action py-2 ripple" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							مدیریت کاربر
+						</span>
+						<ul class="dropdown-menu">
+							<li><span class="dropdown-item" id="users">تمامی کاربرها</span></li>
+							<li><a class="dropdown-item" href="#">Another action</a></li>
+							<li><a class="dropdown-item" href="#">Something else here</a></li>
+						</ul>
+					</div>*@
+					<label class="small opacity-75 my-1">مدیریت کاربر</label>
+					<div class="mb-3">
+					<select class="form-select" >
+						<option id="users" class="dropdown-item 1">
+							ساخت کاربر
+						</option>
+					</select>
+					</div>
+					<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle list-group-item list-group-item-action py-2 ripple" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							مدیریت اسپرینت
+						</button>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">Action</a></li>
+							<li><a class="dropdown-item" href="#">Another action</a></li>
+							<li><a class="dropdown-item" href="#">Something else here</a></li>
+						</ul>
+					</div>
+					<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle list-group-item list-group-item-action py-2 ripple" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							مدیریت نوع تسک
+						</button>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">Action</a></li>
+							<li><a class="dropdown-item" href="#">Another action</a></li>
+							<li><a class="dropdown-item" href="#">Something else here</a></li>
+						</ul>
+					</div>
+				</div>
+		</nav>
+	</div>
+	<div class="col-10" id="report-content"></div>
+</div>
+
+@section Scripts {
+	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
+	<script type="text/javascript" src="~/js/datatable.js"></script>
+	@*<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>*@
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script src="~/lib/select2/dist/js/select2.min.js"></script>
+
+	<script type="text/javascript">
+
+		$("#excel-btn").on("click", function () {
+			let mydata = {
+				sprintIds: $("#floatingSelect").val()
+			}
+
+			let json = JSON.stringify(mydata);
+
+			$.ajax({
+				type: "POST",
+				url: "/Repots/GetTasksExcelUrl",
+				data: json,
+				contentType: 'application/json; charset=utf-8',
+				success: function (data) {
+					window.open(data)
+				},
+				error: function (err) {
+					alert("error");
+					console.log(err);
+				}
+			});
+		})
+
+		$("#users").on("click", function(){
+			$.ajax({
+				type: "GET",
+				url: "/User/GetAllUsers",
+				contentType: 'application/json; charset=utf-8',
+				success: function (data) {
+					$("#report-content").html(data);
+				},
+				error: function (err) {
+					alert("error");
+					console.log(err);
+				}
+			});
+		})
+		
+		$(document).ready(function () {
+
+
+
+
+		});
+
+	</script>
+}
 

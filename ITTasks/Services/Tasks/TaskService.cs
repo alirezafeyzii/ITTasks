@@ -86,7 +86,7 @@ namespace ITTasks.Services.Tasks
 			catch (Exception ex)
 			{
 
-				if (ex.Data["conf"] == "conf")
+				if (ex.Data["conflict"] == "conflict")
 				{
 					return new ITTaskDto
 					{
@@ -216,7 +216,7 @@ namespace ITTasks.Services.Tasks
 			return taskGroup;
 		}
 
-		public async Task<List<ITTaskDto>> GetAllWithOutPaging()
+		public async Task<List<ITTaskDto>> GetAllWithOutPagingAsync()
 		{
 			var taskGroup = new List<ITTaskDto>();
 			var tasks = await _taskRepository.GetAllTaskWithOutPaging();
@@ -261,7 +261,7 @@ namespace ITTasks.Services.Tasks
 			return taskGroup;
 		}
 
-		public async Task<TaskRepository.ReportViewModel> GetReporting()
+		public async Task<TaskRepository.ReportViewModel> GetReportingAsync()
 		{
 			var rp = await _taskRepository.GetAllForReportingAsync();
 			return rp;

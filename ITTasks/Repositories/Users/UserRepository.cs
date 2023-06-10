@@ -17,9 +17,6 @@ namespace ITTasks.Repositories.Users
 
 		public async Task<User> ChangeUserStatusAsync(Guid id, bool status)
 		{
-			if (id == Guid.Empty)
-				return null;
-
 			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == id);
 			if (user == null)
 				return null;
@@ -36,10 +33,7 @@ namespace ITTasks.Repositories.Users
 
 		public async Task<User> CreateUserAsync(CreateUserDto user)
 		{
-			if (user.FullName == null)
-				return null;
-
-			var userSAfterAdd = await _dbContext.Users.AddAsync(new User
+			var usersAfterAdd = await _dbContext.Users.AddAsync(new User
 			{
 				FullName = user.FullName,
 				IsActive = false,
@@ -49,7 +43,7 @@ namespace ITTasks.Repositories.Users
 
 			await _dbContext.SaveChangesAsync();
 
-			return userSAfterAdd.Entity;
+			return usersAfterAdd.Entity;
 
 		}
 
@@ -65,10 +59,16 @@ namespace ITTasks.Repositories.Users
 
 		public async Task<User> GetUserByIdAsync(Guid id)
 		{
-			if (id == Guid.Empty)
+			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == id);
+			if (user == null)
 				return null;
 
-			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == id);
+			return user;
+		}
+
+		public async Task<User> GetUserByNameAsync(string name)
+		{
+			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.FullName.ToLower() == name.ToLower());
 			if (user == null)
 				return null;
 
@@ -77,12 +77,6 @@ namespace ITTasks.Repositories.Users
 
 		public async Task<User> UpdateUserAsync(UserDto user)
 		{
-			if (user.FullName == null)
-				return null;
-
-			if (user.Id == Guid.Empty)
-				return null;
-
 			var userFromFDb = await GetUserByIdAsync(user.Id);
 			if (userFromFDb == null)
 				return null;

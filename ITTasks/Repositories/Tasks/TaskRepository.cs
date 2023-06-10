@@ -25,9 +25,6 @@ namespace ITTasks.Repositories.Tasks
 
 		public async Task<ITTask> CreateTaskAsync(ITTaskCreateDto task, DateTime createdTime)
 		{
-			if (task == null)
-				return null;
-
 			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == Guid.Parse(task.UserId));
 			if (user == null)
 				return null;
@@ -62,10 +59,8 @@ namespace ITTasks.Repositories.Tasks
 			if (conflict != null)
 			{
 				var ex = new Exception();
-				ex.Data["conf"] = "conf";
+				ex.Data["conflict"] = "conflict";
 				ex.Data["Id"] = conflict.Id;
-				ex.Data["StartDate"] = conflict.StartDate;
-				ex.Data["EndDate"] = conflict.EndDate;
 
 				throw ex;
 			}

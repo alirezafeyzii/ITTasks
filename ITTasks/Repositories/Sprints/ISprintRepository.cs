@@ -8,5 +8,6 @@ namespace ITTasks.Repositories.Sprints
 	{
 		public Task<Sprint> CreateAsync(CreateSprintDto sprint, DateTime startDate, DateTime endDate);
 		public Task<List<Sprint>> GetAllAsync();
+		public Task<Sprint> GetByTitleAsync(string title);
 	}
 }

@@ -48,6 +48,29 @@ namespace ITTasks.Infrastructure.Extentions
 			return format;
 		}
 
+		public static long StnadardExcelDate(this string date)
+		{
+			//date template ===> yyyy/mm/dd-mm:ss
+			try
+			{
+				var dateAndTime = date.Split('-');
+
+				var dates = dateAndTime[0].Split('/');
+
+				var times = dateAndTime[1].Split(":");
+
+				var standardDateTime = new PersianCalendar()
+					.ToDateTime(int.Parse(dates[0]), int.Parse(dates[1]), int.Parse(dates[2]), int.Parse(times[0]), int.Parse(times[1]), 0, 0);
+
+				return DateTimeOffset.Parse(standardDateTime.ToString())
+					.ToUnixTimeSeconds();
+			}
+			catch (Exception)
+			{
+				return -1;
+			}
+		}
+
         public static string ToStandardTime(this int time)
         {
             try
@@ -64,5 +87,24 @@ namespace ITTasks.Infrastructure.Extentions
             }
 
         }
+
+		public static int GetStandardMinutes(this string time)
+		{
+			try
+			{
+				var times = time.Split(':');
+
+				var hour = int.Parse(times[0]) * 60;
+				var minutes = int.Parse(times[1]);
+
+				return hour + minutes;
+			}
+			catch (Exception)
+			{
+
+				return -1;
+			}
+
+		}
 	}
 }

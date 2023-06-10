@@ -46,9 +46,13 @@
 			/// </summary>
 			Factory = 10,
 			/// <summary>
-			/// کارخانه
+			/// حسابداری
 			/// </summary>
 			Accounting = 11,
+			/// <summary>
+			/// گرافیک
+			/// </summary>
+			Graphics = 12,
 		}
 
 		public static readonly Dictionary<int, string> keyValues = new Dictionary<int, string>()
@@ -64,11 +68,24 @@
 			{ (int)UnitIds.Other,"سایر"},
 			{ (int)UnitIds.Factory,"کارخانه"},
 			{ (int)UnitIds.Accounting,"حسابداری"},
+			{ (int)UnitIds.Graphics,"گرافیک"},
 		};
 
 		public static string GetUnitName(this int id)
 		{
 			return keyValues[id] ?? "";
+		}
+
+		public static int GetUnitId(this string name)
+		{
+			try
+			{
+				return keyValues.FirstOrDefault(x => x.Value == name).Key;
+			}
+			catch (Exception)
+			{
+				return -1;
+			}
 		}
 	}
 }

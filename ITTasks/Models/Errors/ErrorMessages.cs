@@ -46,5 +46,30 @@
 		/// کاربر یافت نشد
 		/// </summary>
 		public static readonly string UserNotFound = "کاربر یافت نشد";
+
+		/// <summary>
+		/// اسپرینت با این نام قبلا وارد شده است
+		/// </summary>
+		public static readonly string ConflictSprint = "اسپرینت با این نام قبلا وارد شده است";
+
+		/// <summary>
+		/// کاربر با این نام قبلا وارد شده است
+		/// </summary>
+		public static readonly string ConflictUser = "کاربر با این نام قبلا وارد شده است";
+
+		/// <summary>
+		/// کاربر با این نام قبلا وارد شده است
+		/// </summary>
+		public static readonly string ConflictTaskType = "نوع تسک با این نام قبلا وارد شده است";
+
+		/// <summary>
+		/// نوع تسک یافت نشد
+		/// </summary>
+		public static readonly string TaskTypeNotFound = "نوع تسک یافت نشد";
+
+		/// <summary>
+		/// اسپرینت یافت نشد
+		/// </summary>
+		public static readonly string SprintNotFound = "اسپرینت یافت نشد";
 	}
 }

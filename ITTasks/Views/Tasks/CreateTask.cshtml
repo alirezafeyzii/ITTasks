@@ -113,25 +113,32 @@
 		text-align: left;
 	}
 
-	.table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
-		 text-align: center;
-	}
+	/*.table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
+		text-align: center;
+	}*/
 
 </style>
 
 @*<div id="editModal" class="w-100 position-absolute" style="height:700px;display:none;z-index:999">*@
 
-	<div id="modal" class="modal">
-		<div class="modal-content-custom">
-			<span title="بستن" class="close">&times;</span>
-			<br />
-			<div id="edit-modal-content"></div>
-		</div>
+<div id="modal" class="modal">
+	<div class="modal-content-custom">
+		<span title="بستن" class="close">&times;</span>
+		<br />
+		<div id="edit-modal-content"></div>
 	</div>
+</div>
 @*</div>*@
 
 <div class="row">
 	<div class="col-2" style="margin-right:50px">
+		<div class="mb-3">
+			<label class="form-label">ساخت تسک با وارد کردن فایل اکسل</label>
+			<form asp-action="CreateTaskExcel" id="attachUpload" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+				<input id="uploadAttachment" type="file" class="form-control" name="file" />
+			</form>
+			<div asp-validation-summary="All"></div>
+		</div>
 		<form asp-action="CreateTask" asp-controller="Tasks" method="post" style="display:inline">
 			<div class="mb-3">
 				<label asp-for="SprintId" class="form-label">اسپرینت :</label>
@@ -236,7 +243,6 @@
 								<td>@task.TaskType.Title</td>
 								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
 								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task" title="حذف"><i class="fa" aria-hidden="true">&#xf014;</i></button></td>
-								@*<td><a href="/Tasks/UpdateTask?id=@task.Id"><button class="btn btn-info">ویرایش</button></a></td>*@
 								<td>
 									<button data-edit-task-id="@task.Id" class="btn btn-info btn-edit" title="ویرایش">
 										<i class='fa fa-edit' style="color:white"></i>
@@ -250,18 +256,18 @@
 				</table>
 
 				@*<div class="col-3"></div>
-				<div class="col-3 justify-content-end">
-					<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
-				</div>*@
+			<div class="col-3 justify-content-end">
+			<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
+			</div>*@
 
 				@*<div class="col-3"></div>
-				<div class="d-flex col-6 justify-content-center">
-					@Html.PageLinks(@Model.pageInfo, x => Url.Action("CreateTask",
-				new { pageNumber = x.ToString()}))
-				</div>
-				<div class="col-3 d-flex justify-content-end">
-					<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
-				</div>*@
+			<div class="d-flex col-6 justify-content-center">
+			@Html.PageLinks(@Model.pageInfo, x => Url.Action("CreateTask",
+			new { pageNumber = x.ToString()}))
+			</div>
+			<div class="col-3 d-flex justify-content-end">
+			<a href="/tasks/ExcelAllTask"><button class="btn btn-warning">اکسل تمام تسک ها</button></a>
+			</div>*@
 			}
 		</div>
 	</div>
@@ -280,13 +286,52 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="sweetalert2.min.js"></script>
 	<link rel="stylesheet" href="sweetalert2.min.css">
-	
+
 		@{
 			await Html.RenderPartialAsync("_ValidationScriptsPartial");
 		}
 
 	<script type="text/javascript">
 
+		$(function () {
+			$('#uploadAttachment').on('change', function (evt) {
+				evt.preventDefault();
+				$.ajax({
+					url: '/Tasks/CreateTaskExcel',
+					data: new FormData(document.forms[0]),
+					contentType: false,
+					processData: false,
+					type: 'POST',
+				}).done(function (data) {
+					console.log(data);
+					ShowAlert("موفقیت آمیز", " ساخت تسک با موفقیت انجام شد", "success")
+					setInterval('refreshPage()', 4000);
+				})
+					.fail(function (error) {
+						console.log(error);
+						if (error.responseText === "server") {
+							ShowAlert("خطا", " لطفا پارامتر های اکسل را به درستی وارد کنید", "error")
+							setInterval('refreshPage()', 4000);
+						}
+						ShowAlert("خطا", error.responseText, "error")
+						setInterval('refreshPage()', 4000);
+					});
+			});
+		});
+
+		function refreshPage() {
+			location.reload(true);
+		}
+
+
+		//$(document).on('change', '#uploadAttachment', function () {
+		//	$('#attachUpload').trigger('submit');
+		//	console.log($('#attachUpload').val())
+		//})
+
+		//	$(document).on('submit', '#attachUpload', function (e) {
+		//		console.log(e)
+		//	})
 
 		$('#Date').keyup(function () {
 			var new_stuff = $(this).val();
@@ -354,7 +399,7 @@
 		$(".btn-edit").on("click", function () {
 
 			taskToEditId = $(this).data("edit-task-id")
-			
+
 			$.ajax({
 				url: "/Tasks/UpdateTask?id=" + taskToEditId,
 			}).done(function (result) {
@@ -365,7 +410,7 @@
 		}
 		);
 
-		$(".close").on("click", function(){
+		$(".close").on("click", function () {
 			$("#modal").hide();
 		});
 
@@ -410,7 +455,8 @@
 			Swal.fire({
 				icon: type,
 				title: title,
-				text: message
+				text: message,
+				timer: 4000
 			})
 		}
 
@@ -475,24 +521,24 @@
 
 
 
-				//function postdata() {
-				//	//change Age type to int
-				//	var person = { "FirstName": "Andrew", "LastName": "Lock", "Age": 31 };
-				//	$.ajax({
-				//		type: "POST",
-				//		url: "/UpdatePostBody?handler=Abc",
-				//		contentType: "application/json; charset=utf-8",
-				//		dataType: "json",
-				//		data: JSON.stringify(person),
-				//		headers: {
-				//			RequestVerificationToken:
-				//				$('input:hidden[name="__RequestVerificationToken"]').val()
-				//		},
-				//	})
-				//		.done(function (result) {
-				//			console.log(result);
-				//		});
-				//}
+								//function postdata() {
+								//	//change Age type to int
+								//	var person = { "FirstName": "Andrew", "LastName": "Lock", "Age": 31 };
+								//	$.ajax({
+								//		type: "POST",
+								//		url: "/UpdatePostBody?handler=Abc",
+								//		contentType: "application/json; charset=utf-8",
+								//		dataType: "json",
+								//		data: JSON.stringify(person),
+								//		headers: {
+								//			RequestVerificationToken:
+								//				$('input:hidden[name="__RequestVerificationToken"]').val()
+								//		},
+								//	})
+								//		.done(function (result) {
+								//			console.log(result);
+								//		});
+								//}
 
 	</script>
 }
