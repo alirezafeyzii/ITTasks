@@ -43,5 +43,7 @@ namespace ITTasks.Models.DTOS.Tasks
 		public Guid SprintId { get; set; }
         public List<SprintDto> Sprints { get; set; }
         public IFormFile ExcelFile { get; set; }
+        public long FromDate { get; set; }
+		public long ToDate { get; set; }
 	}
 }

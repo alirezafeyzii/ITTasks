@@ -246,11 +246,21 @@ namespace ITTasks.Repositories.Tasks
 				.Include(sp => sp.Sprint)
 				.Include(u => u.User)
 				.Include(tp => tp.ITTaskType)
-				.Where(t =>
-			(searchRequest.SprintIds.Any() ? searchRequest.SprintIds.Select(si => Guid.Parse(si)).Contains(t.SprintId) : true)
+				.Where(tsk =>
+			(searchRequest.SprintIds.Any() ? searchRequest.SprintIds.Select(si => Guid.Parse(si)).Contains(tsk.SprintId) : true)
 			&&
-			(searchRequest.UserIds.Any() ? searchRequest.UserIds.Select(ui => Guid.Parse(ui)).Contains(t.UserId) : true)
-			).ToListAsync();
+			(searchRequest.UserIds.Any() ? searchRequest.UserIds.Select(ui => Guid.Parse(ui)).Contains(tsk.UserId) : true)
+			&&
+			(searchRequest.TaskTypeIds.Any() ? searchRequest.TaskTypeIds.Select(ui => Guid.Parse(ui)).Contains(tsk.ITTaskTypeId) : true)
+			&&
+			(searchRequest.UnitIds.Any() ? searchRequest.UnitIds.Contains(tsk.UnitId) : true)
+			&&
+			(searchRequest.FromDate != 0 && searchRequest.ToDate != 0 ?
+				tsk.StartDate >= searchRequest.FromDate.UnixToDateTime() 
+				&& tsk.StartDate <= searchRequest.ToDate.UnixToDateTime() 
+			:	true)
+			)
+				.ToListAsync();
 
 			return tasks;
 		}

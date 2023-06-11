@@ -2,6 +2,7 @@
 @model ITTaskCreateDto
 @using System.Data;
 @using ChartDirector;
+@using ITTasks.Statics;
 
 @{
 	int xxx = 0;
@@ -11,7 +12,6 @@
 	<link rel="stylesheet" type="text/css" href="~/lib/datatables/datatables.min.css" />
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
-	@*<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />*@
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 	<link href="~/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
 }
@@ -22,8 +22,6 @@
 		background-color: #fbfbfb;
 		overflow-x: hidden;
 	}
-
-
 
 
 	.sidebar .active {
@@ -41,42 +39,42 @@
 	}
 
 	/*select,
-					.select2 {
-						width: auto;
-						margin: 0 auto;
-						border-radius: 0 !important;
-						display: block;
-					}
+								.select2 {
+									width: auto;
+									margin: 0 auto;
+									border-radius: 0 !important;
+									display: block;
+								}
 
-					.select2-container .select2-selection {
-						height: 60px;
-						overflow: scroll;
-					}
+								.select2-container .select2-selection {
+									height: 60px;
+									overflow: scroll;
+								}
 
-					.select2-container--default .select2-selection--multiple {
-						border-radius: 0;
-						line-height: 30px;
-						font-size: 14px;
-						border: 1px solid #fafafa;
-					}
+								.select2-container--default .select2-selection--multiple {
+									border-radius: 0;
+									line-height: 30px;
+									font-size: 14px;
+									border: 1px solid #fafafa;
+								}
 
-					form {
-						background: #f0f0f0;
-						padding: 20px 0;
-						width: 100%;
-					}
+								form {
+									background: #f0f0f0;
+									padding: 20px 0;
+									width: 100%;
+								}
 
-					button {
-						width: 90%;
-						margin: 20px auto 0;
-						line-height: 30px;
-						border-radius: 0;
-						background: #fab100;
-						display: block;
-						border: none;
-						color: #ffffff;
-						font-size: 14px;
-					}*/
+								button {
+									width: 90%;
+									margin: 20px auto 0;
+									line-height: 30px;
+									border-radius: 0;
+									background: #fab100;
+									display: block;
+									border: none;
+									color: #ffffff;
+									font-size: 14px;
+								}*/
 	.select2-container .select2-selection {
 		height: 20px;
 		overflow: auto;
@@ -176,34 +174,56 @@
 					@if (Model.Sprints.Any())
 					{
 						<label class="small opacity-75 my-1">اسپرینت</label>
-						<select id="floatingSelect" class="js-example-basic-multiple js-example-tokenizer" name="states[]" multiple="multiple" style="overflow:auto"
+						<select id="floatingSelect" class="js-example-basic-multiple js-example-tokenizer abc" name="states[]" multiple="multiple" style="overflow:auto"
 							asp-for="SprintId" asp-items="@(new SelectList(Model.Sprints.AsEnumerable(),"Id","Title",Model.SprintId))">
 						</select>
 					}
 					else
 					{
 						<label class="small opacity-75 my-1">اسپرینت</label>
-						
+
 					}
 
+					<label class="small opacity-75 my-1">واحد</label>
+					<select id="floatingSelectUnit" class="js-example-basic-multiple js-example-tokenizer abc" name="states[]" multiple="multiple" style="overflow:auto"
+							asp-for="UnitId" asp-items="@(new SelectList(UnitsTypes.keyValues.AsEnumerable(),"Key","Value",Model.UnitId))">
+					</select>
 
+					@if (Model.Users.Any())
+					{
+						<label class="small opacity-75 my-1">کاربر</label>
+						<select id="floatingSelectuser" class="js-example-basic-multiple js-example-tokenizer abc" name="states[]" multiple="multiple" style="overflow:auto"
+							asp-for="UserId" asp-items="@(new SelectList(Model.Users.AsEnumerable(),"Id","FullName",Model.UserId))">
+						</select>
+					}
+					else
+					{
+						<label class="small opacity-75 my-1">اسپرینت</label>
 
+					}
 
-					<a href="#" class="list-group-item list-group-item-action py-2 ripple">
-						<i class="fas fa-chart-line fa-fw me-3"></i><span>واحد</span>
-					</a>
-					<a href="#" class="list-group-item list-group-item-action py-2 ripple">
-						<i class="fas fa-chart-pie fa-fw me-3"></i><span>کاربر</span>
-					</a>
-					<a href="#" class="list-group-item list-group-item-action py-2 ripple">
-						<i class="fas fa-chart-bar fa-fw me-3"></i><span>نوع تسک</span>
-					</a>
-					<a href="#" class="list-group-item list-group-item-action py-2 ripple">
-						<i class="fas fa-globe fa-fw me-3"></i><span>از تاریخ</span>
-					</a>
-					<a href="#" class="list-group-item list-group-item-action py-2 ripple">
-						<i class="fas fa-building fa-fw me-3"></i><span>تا تاریخ</span>
-					</a>
+					@if (Model.Users.Any())
+					{
+						<label class="small opacity-75 my-1">نوع تسک</label>
+						<select id="floatingSelectTaskType" class="js-example-basic-multiple js-example-tokenizer abc" name="states[]" multiple="multiple" style="overflow:auto"
+							asp-for="TaskTypeId" asp-items="@(new SelectList(Model.ITTaskTypes.AsEnumerable(),"Id","Title",Model.TaskTypeId))">
+						</select>
+					}
+					else
+					{
+						<label class="small opacity-75 my-1">اسپرینت</label>
+
+					}
+					<div class="mb-3">
+						<label asp-for="FromDate" class="small opacity-75 my-1">از تاریخ</label>
+						<input id="fDate" dir="auto" class="form-control abc" placeholder="@Html.DisplayNameFor(model => model.FromDate)" autocomplete="off">
+						<input asp-for="FromDate" class="abc" hidden>
+					</div>
+					<div class="mb-3">
+						<label asp-for="ToDate" class="small opacity-75 my-1">تا تاریخ</label>
+						<input id="tDate" dir="auto" class="form-control abc" placeholder="@Html.DisplayNameFor(model => model.ToDate)" autocomplete="off">
+						<input asp-for="ToDate" class="abc" hidden>
+					</div>
 					<a href="#" class="list-group-item list-group-item-action py-2 ripple">
 						<button id="excel-btn" class="btn btn-warning">
 							خروجی اکسل
@@ -223,23 +243,66 @@
 
 <!--Main layout-->
 @section Scripts {
+
 	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
 	<script type="text/javascript" src="~/js/datatable.js"></script>
-	@*<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>*@
+	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
+	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script src="~/lib/select2/dist/js/select2.min.js"></script>
 
 	<script type="text/javascript">
+		$(document).ready(function () {
 
+			var pd = $("#fDate").persianDatepicker({
+				observer: false,
+				format: 'YYYY/MM/DD',
+				altField: '#FromDate',
+				altFormat: 'X',
+				toolbox: {
+					calendarSwitch: {
+						enabled: false
+					}
+				},
+				onSelect:function(e){
+					search();
+				}
+			});
 
-		$("#floatingSelect").on("change", function () {
+			pd.setDate('@Model.FromDate');
+
+			var sdt = $("#tDate").persianDatepicker({
+				observer: false,
+				format: 'YYYY/MM/DD',
+				altField: '#ToDate',
+				altFormat: 'X',
+				toolbox: {
+					calendarSwitch: {
+						enabled: false
+					}
+				},
+				onSelect:function(e){
+					search();
+				}
+			});
+
+			sdt.setDate('@Model.ToDate');
+
+		});
+
+		$(".abc").on("change", function () {
 			search();
 
 		})
 
 		$("#excel-btn").on("click", function () {
 			let mydata = {
-				sprintIds: $("#floatingSelect").val()
+				sprintIds: $("#floatingSelect").val(),
+				userIds: $("#floatingSelectuser").val(),
+				taskTypeIds: $("#floatingSelectTaskType").val(),
+				unitIds: $("#floatingSelectUnit").val(),
+				fromDate: $("#FromDate").val(),
+				toDate: $("#ToDate").val(),
 			}
 
 			let json = JSON.stringify(mydata);
@@ -254,7 +317,6 @@
 				},
 				error: function (err) {
 					alert("error");
-					console.log(err);
 				}
 			});
 		})
@@ -262,12 +324,15 @@
 		function search() {
 
 			let mydata = {
-				sprintIds: $("#floatingSelect").val()
+				sprintIds: $("#floatingSelect").val(),
+				UserIds: $("#floatingSelectuser").val(),
+				taskTypeIds: $("#floatingSelectTaskType").val(),
+				unitIds: $("#floatingSelectUnit").val(),
+				fromDate: $("#FromDate").val(),
+				toDate: $("#ToDate").val(),
 			}
 
 			let json = JSON.stringify(mydata);
-
-			//console.log(json);
 
 			$.ajax({
 				type: "POST",
@@ -275,12 +340,10 @@
 				data: json,
 				contentType: 'application/json; charset=utf-8',
 				success: function (data) {
-					//console.log(data);
 					$("#report-content").html(data);
 				},
 				error: function (err) {
 					alert("error");
-					console.log(err);
 				}
 			});
 
@@ -314,8 +377,6 @@
 				$("#floatingSelect").val('@Model.Sprints?.LastOrDefault()?.Id').change();
 			}
 
-
-
 			$.ajax({
 				type: 'GET',
 				dataType: "json",
@@ -341,7 +402,6 @@
 				data.addColumn('number', 'دقیقه');
 				var dataArray = [];
 				$.each(result.sprintsReport, function (i, obj) {
-					console.log(obj)
 					dataArray.push([obj.sprintTitle, obj.sumOfTimeOfTasks]);
 				});
 
@@ -374,7 +434,6 @@
 				data.addColumn('number', 'دقیقه');
 				var dataArray = [];
 				$.each(result.unitsReport, function (i, obj) {
-					console.log(obj)
 					dataArray.push([obj.unitName, obj.sumOfTimeOfTasks]);
 				});
 
@@ -397,7 +456,7 @@
 				data.addColumn('number', 'دقیقه');
 				var dataArray = [];
 				$.each(result.taskTypesReport, function (i, obj) {
-					console.log(obj)
+					//console.log(obj)
 					dataArray.push([obj.taskTypeTitle, obj.sumOfTimeOfTasks]);
 				});
 
@@ -420,7 +479,7 @@
 				data.addColumn('number', 'دقیقه');
 				var dataArray = [];
 				$.each(result.usersReport, function (i, obj) {
-					console.log(obj)
+					//console.log(obj)
 					dataArray.push([obj.userName, obj.sumOfTimeOfTasks]);
 				});
 

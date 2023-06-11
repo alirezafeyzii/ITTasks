@@ -12,6 +12,7 @@ using OfficeOpenXml.Style;
 using OfficeOpenXml;
 using System.Drawing;
 using ChartDirector;
+using ITTasks.DataLayer.Entities;
 
 namespace ITTasks.Controllers
 {
@@ -56,6 +57,8 @@ namespace ITTasks.Controllers
 					ITTasks = allTasks,
 					ITTaskTypes = allTaskType,
 					Sprints = allSprint.Any() ? allSprint : new List<Models.DTOS.Sprints.SprintDto>(),
+					FromDate = DateTimeOffset.Now.ToUnixTimeSeconds(),
+					ToDate = DateTimeOffset.Now.ToUnixTimeSeconds(),
 				};
 				return View(viewModel);
 			}
@@ -67,7 +70,9 @@ namespace ITTasks.Controllers
 				ITTasks = allTasks,
 				ITTaskTypes = allTaskType,
 				pageInfo = allTasks.FirstOrDefault().PageInfo,
-				Sprints = allSprint
+				Sprints = allSprint,
+				FromDate = DateTimeOffset.Now.ToUnixTimeSeconds(),
+				ToDate = DateTimeOffset.Now.ToUnixTimeSeconds(),
 			};
 			return View(model);
 		}
@@ -76,11 +81,6 @@ namespace ITTasks.Controllers
 		public async Task<IActionResult> Reports_Partial([FromBody]ReportingSearchDto request)
 		{
 			var tasks = await _taskService.GetTasksForReportingAsync(request);
-
-			//return View(new ITTaskCreateDto
-			//{
-			//	ITTasks = tasks
-			//});
 
 			return PartialView("Reports_Partial",tasks);
 		}
@@ -169,8 +169,8 @@ namespace ITTasks.Controllers
 
 				foreach (var user in users)
 				{
-					var tasksForUser = await _taskService.GetAllTaskForUserAsync(user.Id, request.SprintIds);
-
+					//var tasksForUser = await _taskService.GetAllTaskForUserAsync(user.Id, request.SprintIds);
+					var tasksForUser = tasks.Where(x => x.User.Id == user.Id).ToList();
 					var d = 0;
 
 					foreach (var tsk4user in tasksForUser)

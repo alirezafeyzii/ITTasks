@@ -325,6 +325,13 @@ namespace ITTasks.Services.Tasks
 		public async Task<List<ITTaskDto>> GetTasksForReportingAsync(ReportingSearchDto searchRequest)
 		{
 			var taskGroup = new List<ITTaskDto>();
+
+			if(searchRequest.FromDate.UnixToDateTime() == searchRequest.ToDate.UnixToDateTime())
+			{
+				searchRequest.FromDate = 0;
+				searchRequest.ToDate = 0;
+			}
+
 			var tasks = await _taskRepository.GetTasksForReporting(searchRequest);
 			foreach (var task in tasks)
 			{
