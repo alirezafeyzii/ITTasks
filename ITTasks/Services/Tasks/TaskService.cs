@@ -261,6 +261,12 @@ namespace ITTasks.Services.Tasks
 			return taskGroup;
 		}
 
+		public  TaskRepository.ReportViewModel GetReportForTasks(List<ITTaskDto> tasks)
+		{
+			var tsk =  _taskRepository.GetReportForTasks(tasks);
+			return tsk;
+		}
+
 		public async Task<TaskRepository.ReportViewModel> GetReportingAsync()
 		{
 			var rp = await _taskRepository.GetAllForReportingAsync();
@@ -322,8 +328,14 @@ namespace ITTasks.Services.Tasks
 			};
 		}
 
-		public async Task<List<ITTaskDto>> GetTasksForReportingAsync(ReportingSearchDto searchRequest)
+		public async Task<GetTasksForReportingViewModel> GetTasksForReportingAsync(ReportingSearchDto searchRequest)
 		{
+
+			try
+			{
+
+			var result = new GetTasksForReportingViewModel();
+
 			var taskGroup = new List<ITTaskDto>();
 
 			if(searchRequest.FromDate.UnixToDateTime() == searchRequest.ToDate.UnixToDateTime())
@@ -371,7 +383,20 @@ namespace ITTasks.Services.Tasks
 					ErrorMessage = ErrorMessages.NoError
 				});
 			}
-			return taskGroup;
+
+
+			result.Tasks = taskGroup;
+			result.Reportings = _taskRepository.GetReportForTasks(taskGroup);
+			return result;
+
+
+			}
+			catch (Exception ex)
+			{
+
+				throw;
+			}
+
 		}
 
 		public async Task<ITTaskDto> UpdateTaskAsync(ITTaskUpdateDto task)

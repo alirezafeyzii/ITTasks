@@ -179,6 +179,58 @@ namespace ITTasks.Repositories.Tasks
 			return result;
 		}
 
+
+
+		public  ReportViewModel GetReportForTasks(List<ITTaskDto> tasks)
+		{
+			var sprintReport = tasks
+				.GroupBy(t => t.Sprint.Id)
+				.Select(groupedTasks => new SprintsReportViewModel
+				{
+					SprintId = groupedTasks.Key,
+					SprintTitle = groupedTasks.First().Sprint.Title,
+					SumOfTimeOfTasks = groupedTasks.Sum(t => t.Duration),
+				}).ToList();
+
+			var usersReport = tasks
+				.GroupBy(t => t.UserId)
+				.Select(usersReport => new UsersReportViewModel
+				{
+					UserId = usersReport.Key,
+					UserName = usersReport.First().User.FullName,
+					SumOfTimeOfTasks = usersReport.Sum(t => t.Duration),
+				}).ToList();
+
+			var taskTypesReport = tasks
+				.GroupBy(t => t.TaskType.Id)
+				.Select(typesReport => new TaskTypesReportViewModel
+				{
+					TaskTypeId = typesReport.Key,
+					TaskTypeTitle = typesReport.First().TaskType.Title,
+					SumOfTimeOfTasks = typesReport.Sum(t => t.Duration),
+				}).ToList();
+
+			var unitsReport = tasks
+				.GroupBy(t => t.UnitId)
+				.Select(unitReport => new UnitsReportViewModel
+				{
+					UnitId = unitReport.Key,
+					UnitName = unitReport.First().UnitId.GetUnitName(),
+					SumOfTimeOfTasks = unitReport.Sum(t => t.Duration),
+				}).ToList();
+
+
+			ReportViewModel result = new ReportViewModel()
+			{
+				SprintsReport = sprintReport,
+				UsersReport = usersReport,
+				TaskTypesReport = taskTypesReport,
+				UnitsReport = unitsReport,
+			};
+
+			return result;
+		}
+
 		public async Task<List<ITTask>> GetAllTaskForUserAsync(Guid userId, List<string> sprintIds)
 		{
 			if (userId == Guid.Empty)
@@ -255,7 +307,7 @@ namespace ITTasks.Repositories.Tasks
 			&&
 			(searchRequest.UnitIds.Any() ? searchRequest.UnitIds.Contains(tsk.UnitId) : true)
 			&&
-			(searchRequest.FromDate != 0 && searchRequest.ToDate != 0 ?
+			((searchRequest.FromDate != 0 && searchRequest.ToDate != 0) ?
 				tsk.StartDate >= searchRequest.FromDate.UnixToDateTime() 
 				&& tsk.StartDate <= searchRequest.ToDate.UnixToDateTime() 
 			:	true)

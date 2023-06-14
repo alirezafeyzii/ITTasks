@@ -16,7 +16,10 @@ namespace ITTasks.Services.Tasks
         public Task<ITTaskDto> UpdateTaskAsync(ITTaskUpdateDto task);
         public Task<ITTaskDto> GetTaskByIdAsync(Guid id);
         public Task<List<ITTaskDto>> GetAllTaskForUserAsync(Guid id, List<string> sprintIds);
-		public Task<List<ITTaskDto>> GetTasksForReportingAsync(ReportingSearchDto searchRequest);
+		public Task<GetTasksForReportingViewModel> GetTasksForReportingAsync(ReportingSearchDto searchRequest);
         public Task<ReportViewModel> GetReportingAsync();
+		public ReportViewModel GetReportForTasks(List<ITTaskDto> tasks);
+
+        
 	}
 }

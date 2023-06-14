@@ -29,6 +29,29 @@ namespace ITTasks.Infrastructure.Extentions
             return format;
         }
 
+		public static string ToPersianWithOutSecond(this DateTime dateTime, string? format = default)
+		{
+			PersianCalendar persianCalendar = new();
+			string year = persianCalendar.GetYear(dateTime).ToString();
+			string month = persianCalendar.GetMonth(dateTime).ToString().PadLeft(2, '0');
+			string day = persianCalendar.GetDayOfMonth(dateTime).ToString().PadLeft(2, '0');
+			string hour = dateTime.Hour.ToString().PadLeft(2, '0');
+			string minute = dateTime.Minute.ToString().PadLeft(2, '0');
+
+			if (format is null)
+			{
+				return $"{year}/{month}/{day}-{hour}:{minute}";
+			}
+
+			format = format.Replace("yyyy", year);
+			format = format.Replace("MM", month);
+			format = format.Replace("dd", day);
+			format = format.Replace("hh", hour);
+			format = format.Replace("mm", minute);
+
+			return format;
+		}
+
 		public static string ToPersianWithOutTime(this DateTime dateTime, string? format = default)
 		{
 			PersianCalendar persianCalendar = new();

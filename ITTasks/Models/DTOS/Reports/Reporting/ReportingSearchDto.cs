@@ -1,4 +1,7 @@
-﻿namespace ITTasks.Models.DTOS.Reports.Reporting
+﻿using ITTasks.Models.DTOS.Tasks;
+using static ITTasks.Repositories.Tasks.TaskRepository;
+
+namespace ITTasks.Models.DTOS.Reports.Reporting
 {
 	public class ReportingSearchDto
 	{
@@ -43,5 +46,11 @@
 
 		public long FromDate { get; set; }	
 		public long ToDate { get; set; }
+	}
+
+	public class GetTasksForReportingViewModel : BaseDTO
+	{
+		public List<ITTaskDto> Tasks { get; set; }
+		public ReportViewModel Reportings { get; set; }
 	}
 }

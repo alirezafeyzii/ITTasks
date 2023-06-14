@@ -1,8 +1,10 @@
-﻿@using ITTasks.Models.DTOS.Tasks;
-@model List<ITTaskDto>
+﻿@using ITTasks.Models.DTOS.Reports.Reporting;
+@using ITTasks.Models.DTOS.Tasks;
+@using Newtonsoft.Json;
+@model GetTasksForReportingViewModel
 
 
-	@section styles{
+@section styles{
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
 	@*<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />*@
@@ -50,6 +52,7 @@
 		max-width: 30ch;
 		word-wrap: break-word;
 	}
+
 	.overflow-dotted {
 		text-overflow: ellipsis;
 		overflow: hidden;
@@ -66,17 +69,15 @@
 		text-align: left;
 	}
 
-
-	
 </style>
 
 <div class="container-fluid mt-3 d-flex justify-content-center flex-wrap bg-gray-custom border-radius-5">
-	@if (Model.Count == 0)
+	@if (Model.Tasks.Count == 0)
 	{
 		<h2>موردی برای نمایش وجود ندارد</h2>
 	}
 
-	@if (Model.Count != 0)
+	@if (Model.Tasks.Count != 0)
 	{
 
 		<table class="table data-table table-hover text-nowrap display col-12" id="MyTable1">
@@ -96,7 +97,7 @@
 				@{
 					int i = 1;
 				}
-				@foreach (var task in Model)
+				@foreach (var task in Model.Tasks)
 				{
 					<tr>
 						<td>
@@ -117,18 +118,76 @@
 			</tbody>
 		</table>
 	}
+	<div id="piechart_foot" class="mx-2"></div>
+	<div id="piechart_foot2" class="mx-2"></div>
+	<div id="column_foot3" class="mx-2"></div>
+	<div id="barchart_foot4" class="mx-2"></div>
 </div>
 
 
 
-<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="~/js/datatable.js"></script>
+<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
-	$(document).ready(function () {
-		//$("#MyTable1").removeClass("collapsed");
-	});
+
+	//$(document).ready(function () {
+	//	var objss = '@Model';
+	//	console.log(objss);
+	
+	//	console.log(result,"sss");
+
+	//    //aaa(result);
+
+
+	//	function aaa (result) {
+	//		google.charts.load('current', {
+	//			'packages': ['corechart']
+	//		});
+	//		google.charts.setOnLoadCallback(function () {
+	//			console.log(result);
+	//			drawChartForFiltering(result);
+	//		});
+	//	}
+
+	//	function drawChartForFiltering(result) {
+
+	//		var data = new google.visualization.DataTable();
+
+	//		data.addColumn('string', 'نام کاربر');
+	//		data.addColumn('number', 'دقیقه');
+	//		var dataArray = [];
+
+	//		$.each(result, function (i, obj) {
+	//			dataArray.push([obj.userName, obj.sumOfTimeOfTasks]);
+	//		});
+
+	//		data.addRows(dataArray);
+
+	//		var piechart_options = {
+	//			title: 'چارت جمع ساعت های هر اسپرینت به صورت درصد',
+	//			width: 400,
+	//			height: 300
+	//		};
+
+	//		var piechart = new google.visualization.PieChart(document.getElementById('piechart_foot'));
+
+	//		piechart.draw(data, piechart_options);
+
+	//		var barchart_options = {
+	//			title: 'چارت جمع ساعت های هر اسپرینت',
+	//			width: 400,
+	//			height: 300,
+	//			legend: 'none'
+	//		};
+
+	//		var barchart = new google.visualization.ColumnChart(document.getElementById('piechart_foot2'));
+	//		barchart.draw(data, barchart_options);
+	//	}
+	//});
+
 </script>
 
 

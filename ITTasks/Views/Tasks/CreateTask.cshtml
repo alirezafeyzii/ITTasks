@@ -6,9 +6,10 @@
 @section Styles{
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
-	<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="~/lib/datatables/datatables.min.css" />
+
+	<link href="~/lib/sweetalert2/sweetalert.min.css" rel="stylesheet" />
 }
 <style>
 	td {
@@ -114,8 +115,8 @@
 	}
 
 	/*.table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
-		text-align: center;
-	}*/
+					text-align: center;
+				}*/
 
 </style>
 
@@ -248,7 +249,6 @@
 										<i class='fa fa-edit' style="color:white"></i>
 									</button>
 								</td>
-
 							</tr>
 						}
 
@@ -279,17 +279,16 @@
 
 
 @section Scripts {
+	
 	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
 	<script type="text/javascript" src="~/js/datatable.js"></script>
 	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
 	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="sweetalert2.min.js"></script>
-	<link rel="stylesheet" href="sweetalert2.min.css">
 
-		@{
-			await Html.RenderPartialAsync("_ValidationScriptsPartial");
-		}
+
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 
 	<script type="text/javascript">
 
@@ -369,11 +368,53 @@
 			pd.setDate('@Model.Date');
 
 
+
 			$(".btn-delete-task").on("click",
 				function () {
 					taskToDeleteId = $(this).data("task-id");
 					DeleteSwalAlert()
 				});
+
+
+			// for reinitalizing event on datatable changes in DOM
+			$("#DataTables_Table_0_filter input").on("input", function () {
+				setTimeout(function () {
+					$('.btn-delete-task').off('click');
+					$(".btn-delete-task").on("click",
+						function () {
+							taskToDeleteId = $(this).data("task-id");
+							DeleteSwalAlert()
+						});
+				}, 1000)
+			});
+
+			// for reinitalizing event on datatable changes in DOM
+			$("#DataTables_Table_0_length select").on("change", function () {
+				setTimeout(function () {
+					$('.btn-delete-task').off('click');
+					$(".btn-delete-task").on("click",
+						function () {
+							taskToDeleteId = $(this).data("task-id");
+							DeleteSwalAlert()
+						});
+				}, 1000)
+			});
+
+			// for reinitalizing event on datatable changes in DOM
+			$(".page-link").on("click", function () {
+				setTimeout(function () {
+					$('.btn-delete-task').off('click');
+					$(".btn-delete-task").on("click",
+						function () {
+							taskToDeleteId = $(this).data("task-id");
+							DeleteSwalAlert()
+						});
+				}, 1000)
+			});
+
+
+			
+
 
 			$("#btn-delete-task").on("click", function () {
 
@@ -414,10 +455,11 @@
 			$("#modal").hide();
 		});
 
+		
+
 		function openModal(modalId) {
 			$("#" + modalId).show();
 		}
-
 
 		function deleteTask() {
 
@@ -521,24 +563,24 @@
 
 
 
-								//function postdata() {
-								//	//change Age type to int
-								//	var person = { "FirstName": "Andrew", "LastName": "Lock", "Age": 31 };
-								//	$.ajax({
-								//		type: "POST",
-								//		url: "/UpdatePostBody?handler=Abc",
-								//		contentType: "application/json; charset=utf-8",
-								//		dataType: "json",
-								//		data: JSON.stringify(person),
-								//		headers: {
-								//			RequestVerificationToken:
-								//				$('input:hidden[name="__RequestVerificationToken"]').val()
-								//		},
-								//	})
-								//		.done(function (result) {
-								//			console.log(result);
-								//		});
-								//}
+														//function postdata() {
+														//	//change Age type to int
+														//	var person = { "FirstName": "Andrew", "LastName": "Lock", "Age": 31 };
+														//	$.ajax({
+														//		type: "POST",
+														//		url: "/UpdatePostBody?handler=Abc",
+														//		contentType: "application/json; charset=utf-8",
+														//		dataType: "json",
+														//		data: JSON.stringify(person),
+														//		headers: {
+														//			RequestVerificationToken:
+														//				$('input:hidden[name="__RequestVerificationToken"]').val()
+														//		},
+														//	})
+														//		.done(function (result) {
+														//			console.log(result);
+														//		});
+														//}
 
 	</script>
 }

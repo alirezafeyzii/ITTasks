@@ -39,42 +39,42 @@
 	}
 
 	/*select,
-								.select2 {
-									width: auto;
-									margin: 0 auto;
-									border-radius: 0 !important;
-									display: block;
-								}
+									.select2 {
+										width: auto;
+										margin: 0 auto;
+										border-radius: 0 !important;
+										display: block;
+									}
 
-								.select2-container .select2-selection {
-									height: 60px;
-									overflow: scroll;
-								}
+									.select2-container .select2-selection {
+										height: 60px;
+										overflow: scroll;
+									}
 
-								.select2-container--default .select2-selection--multiple {
-									border-radius: 0;
-									line-height: 30px;
-									font-size: 14px;
-									border: 1px solid #fafafa;
-								}
+									.select2-container--default .select2-selection--multiple {
+										border-radius: 0;
+										line-height: 30px;
+										font-size: 14px;
+										border: 1px solid #fafafa;
+									}
 
-								form {
-									background: #f0f0f0;
-									padding: 20px 0;
-									width: 100%;
-								}
+									form {
+										background: #f0f0f0;
+										padding: 20px 0;
+										width: 100%;
+									}
 
-								button {
-									width: 90%;
-									margin: 20px auto 0;
-									line-height: 30px;
-									border-radius: 0;
-									background: #fab100;
-									display: block;
-									border: none;
-									color: #ffffff;
-									font-size: 14px;
-								}*/
+									button {
+										width: 90%;
+										margin: 20px auto 0;
+										line-height: 30px;
+										border-radius: 0;
+										background: #fab100;
+										display: block;
+										border: none;
+										color: #ffffff;
+										font-size: 14px;
+									}*/
 	.select2-container .select2-selection {
 		height: 20px;
 		overflow: auto;
@@ -94,6 +94,10 @@
 
 	.vh-50 {
 		height: 50vh;
+	}
+
+	.vh-80 {
+		height: 80vh;
 	}
 
 
@@ -147,15 +151,6 @@
 
 
 	<div class="col-12 vh-30 d-flex justify-content-end mb-5">
-		@*@{
-		var myChart = new XYChart(450,450).
-		.AddTitle("Chart Title")
-		.AddSeries(
-		name: "Employee",
-		xValue: new[] { "Peter", "Andrew", "Julie", "Mary", "Dave" },
-		yValues: new[] { "2", "6", "4", "5", "3" })
-		.Write();
-		}*@
 		<div id="piechart_div" class="mx-2"></div>
 		<div id="piechart_div_un" class="mx-2"></div>
 		<div id="column_div_u" class="mx-2"></div>
@@ -234,14 +229,16 @@
 			</div>
 		</nav>
 	</div>
-	<div id="report-content" class="col-10 border-radius-5">
+	<div class="col-10 ">
+		<div id="report-content" class="col-12 border-radius-5">
+		</div>
+		<div id="report-content1" class="col-12 vh-30 d-flex">
+			
+		</div>
 	</div>
-
 
 </div>
 
-
-<!--Main layout-->
 @section Scripts {
 
 	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
@@ -264,7 +261,7 @@
 						enabled: false
 					}
 				},
-				onSelect:function(e){
+				onSelect: function (e) {
 					search();
 				}
 			});
@@ -281,7 +278,7 @@
 						enabled: false
 					}
 				},
-				onSelect:function(e){
+				onSelect: function (e) {
 					search();
 				}
 			});
@@ -292,7 +289,7 @@
 
 		$(".abc").on("change", function () {
 			search();
-
+			ChartF();
 		})
 
 		$("#excel-btn").on("click", function () {
@@ -321,8 +318,9 @@
 			});
 		})
 
-		function search() {
 
+
+		function search() {
 			let mydata = {
 				sprintIds: $("#floatingSelect").val(),
 				UserIds: $("#floatingSelectuser").val(),
@@ -340,10 +338,12 @@
 				data: json,
 				contentType: 'application/json; charset=utf-8',
 				success: function (data) {
+					//console.log(data);
 					$("#report-content").html(data);
 				},
 				error: function (err) {
-					alert("error");
+					alert(err);
+					console.log(err)
 				}
 			});
 
@@ -362,20 +362,32 @@
 			return list;
 		}
 
+
+
+		function ChartF(){
+			
+		}
+
 		$(document).ready(function () {
 			$('.js-example-basic-multiple').select2();
-		});
 
-		$(".js-example-tokenizer").select2({
-			tags: true,
-			tokenSeparators: [',', ' ']
-		})
-
-		$(document).ready(function () {
-
+			$(".js-example-tokenizer").select2({
+				tags: true,
+				tokenSeparators: [',', ' ']
+			})
 			if ('@(Model.Sprints != null && Model.Sprints.Count != 0)' == 'True') {
 				$("#floatingSelect").val('@Model.Sprints?.LastOrDefault()?.Id').change();
 			}
+
+			///////////////
+
+			
+
+
+
+
+
+			/////////////
 
 			$.ajax({
 				type: 'GET',
@@ -383,6 +395,7 @@
 				contentType: "application/json",
 				url: '/sprint/GetAllSprints',
 				success: function (result) {
+					console.log(result);
 					google.charts.load('current', {
 						'packages': ['corechart']
 					});
@@ -396,7 +409,7 @@
 			});
 
 			function drawChart(result) {
-				console.log(result);
+				//console.log(result);
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'SprintTitle');
 				data.addColumn('number', 'دقیقه');

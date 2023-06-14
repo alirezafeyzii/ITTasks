@@ -5,6 +5,7 @@ using ITTasks.Models.DTOS.Tasks.TasksType;
 using ITTasks.Models.DTOS.Users;
 using ITTasks.Models.Parameters;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace ITTasks.Models.DTOS.Tasks
 {
@@ -45,5 +46,6 @@ namespace ITTasks.Models.DTOS.Tasks
         public IFormFile ExcelFile { get; set; }
         public long FromDate { get; set; }
 		public long ToDate { get; set; }
+        public ClaimsPrincipal CurrentUser { get; set; }
 	}
 }

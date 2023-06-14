@@ -18,5 +18,6 @@ namespace ITTasks.Repositories.Tasks
         public Task<List<ITTask>> GetAllTaskForUserAsync(Guid userId, List<string> sprintIds);
         public Task<List<ITTask>> GetTasksForReporting(ReportingSearchDto searchRequest);
         public Task<ReportViewModel> GetAllForReportingAsync();
+        public ReportViewModel GetReportForTasks(List<ITTaskDto> tasks);
 	}
 }

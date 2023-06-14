@@ -85,6 +85,14 @@ namespace ITTasks.Controllers
 			return PartialView("Reports_Partial",tasks);
 		}
 
+		[HttpGet("/Reports/Chart_Reports")]
+		public async Task<IActionResult> Chart_Reports( ReportingSearchDto request)
+		{
+			var tasksForCharts = await _taskService.GetTasksForReportingAsync(request);
+			var dt = _taskService.GetReportForTasks(tasksForCharts.Tasks);
+			return Ok(dt);
+		}
+
 		public async Task<string> ExcelTasks(ReportingSearchDto request)
 		{
 			var tasks = await _taskService.GetTasksForReportingAsync(request);
@@ -134,13 +142,13 @@ namespace ITTasks.Controllers
 				worksheet.Cells["J4:L4"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
 				row = 5;
-				foreach (var task in tasks)
+				foreach (var task in tasks.Tasks)
 				{
 					worksheet.DefaultColWidth = 20;
 					worksheet.Cells[row, 1].Value = task.User.FullName;
 					worksheet.Cells[row, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 2].Value = DateTimeExtention.ToPersianWithOutTime(task.Date);
+					worksheet.Cells[row, 2].Value = DateTimeExtention.ToPersianWithOutSecond(task.Date);
 					worksheet.Cells[row, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 					worksheet.Cells[row, 3].Value = task.Duration.ToStandardTime();
@@ -170,7 +178,7 @@ namespace ITTasks.Controllers
 				foreach (var user in users)
 				{
 					//var tasksForUser = await _taskService.GetAllTaskForUserAsync(user.Id, request.SprintIds);
-					var tasksForUser = tasks.Where(x => x.User.Id == user.Id).ToList();
+					var tasksForUser = tasks.Tasks.Where(x => x.User.Id == user.Id).ToList();
 					var d = 0;
 
 					foreach (var tsk4user in tasksForUser)

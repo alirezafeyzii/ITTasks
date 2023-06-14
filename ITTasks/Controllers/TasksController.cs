@@ -77,7 +77,8 @@ namespace ITTasks.Controllers
 				ITTasks = allTasks,
 				ITTaskTypes = allTaskType,
 				pageInfo = allTasks.FirstOrDefault().PageInfo,
-				Sprints = allSprint
+				Sprints = allSprint,
+				CurrentUser = User
 			};
 
 			return View(model);
@@ -225,7 +226,7 @@ namespace ITTasks.Controllers
 					worksheet.Cells[row, 1].Value = task.User.FullName;
 					worksheet.Cells[row, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-					worksheet.Cells[row, 2].Value = DateTimeExtention.ToPersianWithOutTime(task.Date);
+					worksheet.Cells[row, 2].Value = DateTimeExtention.ToPersianWithOutSecond(task.Date);
 					worksheet.Cells[row, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 					worksheet.Cells[row, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 					worksheet.Cells[row, 3].Value = task.Duration.ToStandardTime();
