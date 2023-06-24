@@ -19,5 +19,6 @@ namespace ITTasks.Repositories.Tasks
         public Task<List<ITTask>> GetTasksForReporting(ReportingSearchDto searchRequest);
         public Task<ReportViewModel> GetAllForReportingAsync();
         public ReportViewModel GetReportForTasks(List<ITTaskDto> tasks);
+        
 	}
 }

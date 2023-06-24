@@ -30,6 +30,13 @@ namespace ITTasks.Repositories.Sprints
 			return sprintFromDb.Entity;
 		}
 
+		public async Task DeleteSprintAsync(Guid id)
+		{
+			var sprint = await _dbContext.Sprints.FirstOrDefaultAsync(x =>x.Id == id);
+			_dbContext.Sprints.Remove(sprint);
+			await _dbContext.SaveChangesAsync();
+		}
+
 		public async Task<List<Sprint>> GetAllAsync()
 		{
 			return await _dbContext.Sprints.OrderByDescending(x => x.CreatedDate).ToListAsync();

@@ -53,6 +53,13 @@ namespace ITTasks.Controllers
 			});
 		}
 
+		[HttpGet("sprint/delete/{id}")]
+		public async Task<IActionResult> DeleteSprint(string id)
+		{
+			await _sprintService.DleteSprintAsync(Guid.Parse(id));
+			return Ok("Success");
+		}
+
 		[Route("/sprint/GetAllSprints")]
 		public async Task<IActionResult> GetAllSprints()
 		{

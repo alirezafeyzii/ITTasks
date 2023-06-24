@@ -76,6 +76,11 @@ namespace ITTasks.Services.Sprints
 			};
 		}
 
+		public async Task DleteSprintAsync(Guid id)
+		{
+			await _sprintRepository.DeleteSprintAsync(id);
+		}
+
 		public async Task<List<SprintDto>> GetAllAsync()
 		{
 			var sprintGroup = new List<SprintDto>();
