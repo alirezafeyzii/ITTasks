@@ -3,12 +3,33 @@
 <form asp-action="CreateUser" asp-controller="User" method="post">
 	<div class="mb-3">
 		<div class="mb-3 col-3">
-			<label asp-for="FullName" class="form-label">نام کاربر </label>
+			<label asp-for="FullName" class="form-label">نام و نام خانوادگی </label>
 			<input asp-for="FullName" class="form-control">
 			<span asp-validation-for="FullName"></span>
+		</div>
+		<div class="mb-3 col-3">
+			<label asp-for="UserName" class="form-label">نام کاربری </label>
+			<input asp-for="UserName" class="form-control">
+			<span asp-validation-for="UserName"></span>
+		</div>
+		<div class="mb-3 col-3">
+			<label asp-for="Email" class="form-label">ایمیل </label>
+			<input asp-for="Email" class="form-control">
+			<span asp-validation-for="Email"></span>
+		</div>
+		<div class="mb-3 col-3">
+			<label asp-for="PhoneNumber" class="form-label">شماره تلفن همراه </label>
+			<input asp-for="PhoneNumber" class="form-control">
+			<span asp-validation-for="PhoneNumber"></span>
+		</div>
+		<div class="mb-3 col-3">
+			<label asp-for="Password" class="form-label">رمز </label>
+			<input asp-for="Password" class="form-control">
+			<span asp-validation-for="Password"></span>
 		</div>
 		<input type="submit" class="btn btn-outline-success" value="ثبت" />
 		<br />
 		<span class="text-success">@ViewBag.Successful</span>
 		<span class="text-danger">@ViewBag.ErrorMessage</span>
+		<div />
 </form>

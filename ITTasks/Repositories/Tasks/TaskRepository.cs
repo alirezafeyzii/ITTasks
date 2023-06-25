@@ -144,7 +144,7 @@ namespace ITTasks.Repositories.Tasks
 				.Select(usersReport => new UsersReportViewModel
 				{
 					UserId = usersReport.Key,
-					UserName = usersReport.First().User.FullName,
+					UserName = usersReport.First().User.UserName,
 					SumOfTimeOfTasks = usersReport.Sum(t => t.Duration),
 				}).ToListAsync();
 
@@ -276,7 +276,7 @@ namespace ITTasks.Repositories.Tasks
 				.Include(x => x.Sprint)
 				.OrderBy(x => x.Sprint)
 				.ThenBy(x => x.StartDate)
-				.ThenBy(x => x.User.FullName)
+				.ThenBy(x => x.User.UserName)
 				.ToListAsync();
 		}
 

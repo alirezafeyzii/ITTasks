@@ -1,7 +1,10 @@
 ﻿using ITTasks.DataLayer;
 using ITTasks.DataLayer.Entities;
+using ITTasks.Infrastructure.Utilities;
 using ITTasks.Models.DTOS.Users;
 using ITTasks.Models.Errors;
+using ITTasks.Repositories.Roles;
+using ITTasks.Statics.Entities.Roles;
 using Microsoft.EntityFrameworkCore;
 
 namespace ITTasks.Repositories.Users
@@ -9,10 +12,13 @@ namespace ITTasks.Repositories.Users
 	public class UserRepository : IUserRepository
 	{
 		private readonly ITDbContext _dbContext;
+		private readonly IRoleRepository _roleRepository;
 
-		public UserRepository(ITDbContext dbContext)
+		public UserRepository(ITDbContext dbContext, 
+			IRoleRepository roleRepository)
 		{
 			_dbContext = dbContext;
+			_roleRepository = roleRepository;
 		}
 
 		public async Task<User> ChangeUserStatusAsync(Guid id, bool status)
@@ -33,13 +39,30 @@ namespace ITTasks.Repositories.Users
 
 		public async Task<User> CreateUserAsync(CreateUserDto user)
 		{
-			var usersAfterAdd = await _dbContext.Users.AddAsync(new User
+			var role = await _roleRepository.GetRoleByTypeAsync(RoleTypes.User);
+
+			var userNameNormalize = user.UserName.Trim().ToUpper().Replace(" ","");
+			var emailNormalize = user.Email.Trim().ToUpper().Replace(" ", "");
+
+			var userForCreate = new User
 			{
 				FullName = user.FullName,
+				UserName = user.UserName,
+				NormalizedUserName = userNameNormalize,
+				Email = user.Email,
+				NormalizedEmail = emailNormalize,
+				PhoneNumber = user.PhoneNumber,
+				EmailConfirmed = false,
+				PhoneNumberConfirmed = false,
 				IsActive = false,
+				PasswordHash = user.Password.Encrypt(),
+				Token = user.Token != null ? user.Token : string.Empty,
+				RoleId = role.Id,
 				CreatedTime = DateTime.Now,
 				UpdatedTime = DateTime.MinValue,
-			});
+			};
+
+			var usersAfterAdd = await _dbContext.Users.AddAsync(userForCreate);
 
 			await _dbContext.SaveChangesAsync();
 
@@ -81,7 +104,7 @@ namespace ITTasks.Repositories.Users
 			if (userFromFDb == null)
 				return null;
 
-			userFromFDb.FullName = user.FullName;
+			userFromFDb.UserName = user.FullName;
 			userFromFDb.UpdatedTime = DateTime.Now;
 
 			var userForReturn = _dbContext.Users.Update(userFromFDb);

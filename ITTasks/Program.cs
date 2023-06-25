@@ -1,9 +1,13 @@
 using ITTasks.DataLayer;
 using ITTasks.Infrastructure.Migrate;
+using ITTasks.Infrastructure.Seeding.Roles;
+using ITTasks.Infrastructure.Seeding.SeedingConfig;
+using ITTasks.Repositories.Roles;
 using ITTasks.Repositories.Sprints;
 using ITTasks.Repositories.Tasks;
 using ITTasks.Repositories.Tasks.TasksType;
 using ITTasks.Repositories.Users;
+using ITTasks.Services.Roles;
 using ITTasks.Services.Sprints;
 using ITTasks.Services.Tasks;
 using ITTasks.Services.Tasks.TasksType;
@@ -32,6 +36,7 @@ builder.Services.AddDbContext<ITDbContext>(option =>
 	option.UseSqlite("Data Source=ittask.db");
 });
 
+builder.Services.AddTransient<RolesDataSeeding>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -44,6 +49,9 @@ builder.Services.AddScoped<ITaskTypeService, TaskTypeService>();
 
 builder.Services.AddScoped<ISprintRepository, SprintRepository>();
 builder.Services.AddScoped<ISprintService, SprintService>();
+
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 //builder.Services.AddAuthentication(options =>
 //{
@@ -114,6 +122,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRoleDataSeed();
 
 app.UseMigration();
 

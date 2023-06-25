@@ -70,7 +70,7 @@ namespace ITTasks.Services.Tasks
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = taskModel.User.Id,
-						FullName = taskModel.User.FullName,
+						FullName = taskModel.User.UserName,
 						CreatedTime = taskModel.User.CreatedTime,
 						UpdatedTime = taskModel.User.UpdatedTime,
 					},
@@ -189,7 +189,7 @@ namespace ITTasks.Services.Tasks
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = task.User.Id,
-						FullName = task.User.FullName,
+						FullName = task.User.UserName,
 						CreatedTime = task.User.CreatedTime,
 						UpdatedTime = task.User.UpdatedTime,
 					},
@@ -235,7 +235,7 @@ namespace ITTasks.Services.Tasks
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = task.User.Id,
-						FullName = task.User.FullName,
+						FullName = task.User.UserName,
 						CreatedTime = task.User.CreatedTime,
 						UpdatedTime = task.User.UpdatedTime,
 					},
@@ -304,7 +304,7 @@ namespace ITTasks.Services.Tasks
 				User = new Models.DTOS.Users.UserDto
 				{
 					Id = task.User.Id,
-					FullName = task.User.FullName,
+					FullName = task.User.UserName,
 					CreatedTime = task.User.CreatedTime,
 					UpdatedTime = task.User.UpdatedTime,
 				},
@@ -361,7 +361,7 @@ namespace ITTasks.Services.Tasks
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = task.User.Id,
-						FullName = task.User.FullName,
+						FullName = task.User.UserName,
 						CreatedTime = task.User.CreatedTime,
 						UpdatedTime = task.User.UpdatedTime,
 					},
@@ -455,7 +455,7 @@ namespace ITTasks.Services.Tasks
 					User = new Models.DTOS.Users.UserDto
 					{
 						Id = taskFromRepo.User.Id,
-						FullName = taskFromRepo.User.FullName,
+						FullName = taskFromRepo.User.UserName,
 					},
 					Description = taskFromRepo.Description,
 					Duration = taskFromRepo.Duration,

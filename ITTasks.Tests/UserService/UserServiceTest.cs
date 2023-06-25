@@ -33,7 +33,7 @@ namespace ITTasks.Tests.UserService
 		{
 			var user = new CreateUserDto
 			{
-				FullName = "TestName",
+				UserName = "TestName",
 			};
 
 			var userFromService = await userService.CreateUserAsync(user);
@@ -55,7 +55,7 @@ namespace ITTasks.Tests.UserService
 		{
 			var user = new CreateUserDto
 			{
-				FullName = "TestName",
+				UserName = "TestName",
 			};
 
 			var userAfterCreate = await userService.CreateUserAsync(user);
@@ -79,7 +79,7 @@ namespace ITTasks.Tests.UserService
 		{
 			var user = new CreateUserDto
 			{
-				FullName = "TestName",
+				UserName = "TestName",
 			};
 
 			var userFromService = await userService.CreateUserAsync(user);

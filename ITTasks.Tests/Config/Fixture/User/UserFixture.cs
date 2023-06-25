@@ -1,4 +1,5 @@
-﻿using ITTasks.Repositories.Users;
+﻿using ITTasks.Repositories.Roles;
+using ITTasks.Repositories.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,11 @@ namespace ITTasks.Tests.Config.Fixture.User
 	{
 		private UserRepository userRepository;
 		public ITTasks.Services.Users.UserService userService;
+		public RoleRepository roleRepository;
 
 		public UserFixture() 
 		{
-			userRepository = new UserRepository(dbContext);
+			userRepository = new UserRepository(dbContext, roleRepository);
 			userService = new Services.Users.UserService(userRepository);
 		}
 	}
