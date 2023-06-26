@@ -17,6 +17,12 @@
 			<input asp-for="Password" class="form-control">
 			<span asp-validation-for="Password"></span>
 		</div>
+	</div><div class="mb-3">
+		<div class="mb-3 col-3">
+			<label>مرا به خاطر بسپار </label>
+			<input asp-for="RememberMe" class="" id="flexCheckDefault">
+			<span asp-validation-for="RememberMe"></span>
+		</div>
 	</div>
 	<input type="submit" class="btn btn-outline-success" value="ورود" /><br/>
 	<span class="text-danger">@ViewBag.ErrorMessage</span>

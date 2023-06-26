@@ -24,6 +24,7 @@ using System.IO;
 
 namespace ITTasks.Controllers
 {
+	[Authorize]
 	public class TasksController : Controller
 	{
 		private readonly IUserService _userService;
@@ -45,7 +46,7 @@ namespace ITTasks.Controllers
 			_hostEnv = hostEnv;
 		}
 
-		//[Authorize]
+		
 		public async Task<IActionResult> CreateTask(int pageNumber = 1)
 		{
 			var param = new TaskParameters { PageNumber = pageNumber };

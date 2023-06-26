@@ -6,10 +6,16 @@ namespace ITTasks.Models.DTOS.Users
     {
         public Guid Id { get; set; }
         public string FullName { get; set; }
-        public bool IsActive { get; set; }
+		public string UserName { get; set; }
+		public string Email { get; set; }
+		public string PhoneNumber { get; set; }
+		public string Password { get; set; }
+        public string Token { get; set; }
+		public bool IsActive { get; set; }
         public DateTime CreatedTime { get; set; }
         public DateTime UpdatedTime { get; set; }
         public List<UserDto> Users { get; set; }
+        public Role Role { get; set; }
 
         public static implicit operator UserDto(User user)
         {

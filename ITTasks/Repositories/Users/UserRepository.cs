@@ -41,8 +41,17 @@ namespace ITTasks.Repositories.Users
 		{
 			var role = await _roleRepository.GetRoleByTypeAsync(RoleTypes.User);
 
-			var userNameNormalize = user.UserName.Trim().ToUpper().Replace(" ","");
-			var emailNormalize = user.Email.Trim().ToUpper().Replace(" ", "");
+			var userNameNormalize = user.UserName.ToNormalize();
+			var emailNormalize = user.Email.ToNormalize();
+
+			var conflict = await _dbContext.Users
+				.Where(u => u.NormalizedEmail == emailNormalize ||
+				u.NormalizedUserName == userNameNormalize || 
+				u.PhoneNumber == user.PhoneNumber)
+				.FirstOrDefaultAsync();
+
+			if (conflict is not null)
+				return null;
 
 			var userForCreate = new User
 			{
@@ -83,6 +92,24 @@ namespace ITTasks.Repositories.Users
 		public async Task<User> GetUserByIdAsync(Guid id)
 		{
 			var user = await _dbContext.Users.SingleOrDefaultAsync(x => x.Id == id);
+			if (user == null)
+				return null;
+
+			return user;
+		}
+
+		public async Task<User> GetUserForSignInAsync(string userName, string password)
+		{
+			var user = await _dbContext.Users
+				.Include(x => x.Roles)
+				.Where(u => 
+				(u.NormalizedUserName == userName.ToNormalize() ||
+				u.NormalizedEmail == userName.ToNormalize() ||
+				u.PhoneNumber == userName)
+				&& 
+				u.PasswordHash == password.Encrypt())
+				.SingleOrDefaultAsync();
+
 			if (user == null)
 				return null;
 

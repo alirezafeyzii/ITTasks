@@ -7,6 +7,7 @@ using ITTasks.Repositories.Sprints;
 using ITTasks.Repositories.Tasks;
 using ITTasks.Repositories.Tasks.TasksType;
 using ITTasks.Repositories.Users;
+using ITTasks.Services.Auth;
 using ITTasks.Services.Roles;
 using ITTasks.Services.Sprints;
 using ITTasks.Services.Tasks;
@@ -53,6 +54,8 @@ builder.Services.AddScoped<ISprintService, SprintService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 //builder.Services.AddAuthentication(options =>
 //{
 //	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -74,7 +77,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 //	});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-			.AddCookie();
+			.AddCookie(x => x.LoginPath = "/Auth/Login");
 
 //builder.Services.AddAuthentication(option =>
 //{

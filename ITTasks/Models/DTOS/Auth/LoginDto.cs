@@ -10,5 +10,6 @@ namespace ITTasks.Models.DTOS.Auth
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessage = "رمز را وارد کنید ")]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
+		public bool RememberMe { get; set; }
 	}
 }

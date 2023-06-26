@@ -11,5 +11,6 @@ namespace ITTasks.Services.Users
         public Task<UserDto> UpdatUserAsync(UserDto user);
         public Task<UserDto> ChangeUserStatusAsync(Guid id, bool status);
         public Task<UserDto> GetUserByNameAsync(string name);
+        public Task<UserDto> GetUserForSignInAsync(string userName, string password);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ITTasks.Models.DTOS.Users;
 using ITTasks.Models.Errors;
 using ITTasks.Services.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITTasks.Controllers
@@ -14,6 +15,7 @@ namespace ITTasks.Controllers
             _userService = userService;
         }
 
+        [Authorize]
         public IActionResult CreateUser()
         {
             return View();

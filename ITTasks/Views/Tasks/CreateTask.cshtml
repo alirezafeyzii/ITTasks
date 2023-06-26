@@ -1,6 +1,8 @@
 ﻿@using ITTasks.Infrastructure.Helper;
 @using ITTasks.Models.DTOS.Tasks;
 @using ITTasks.Statics;
+@using ITTasks.Statics.Entities.Roles;
+@using System.Security.Claims;
 @model ITTaskCreateDto
 
 @section Styles{
@@ -115,8 +117,8 @@
 	}
 
 	/*.table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
-					text-align: center;
-				}*/
+						text-align: center;
+					}*/
 
 </style>
 
@@ -223,32 +225,41 @@
 							<th></th>
 						</tr>
 					</thead>
+
+
+
 					<tbody>
 						@{
 							var index = ((Model.pageInfo.CurrentPage - 1) * Model.pageInfo.ItemsPerPage) + 1;
 						}
 						@foreach (var task in Model.ITTasks)
 						{
-							<tr>
-								<td>
-									@(
-										index++
-										)
-								</td>
-								<td>@task.User.FullName</td>
-								<td>@task.StandardDuration</td>
-								<td>@task.PersianDate</td>
-								<td>@task.UnitName</td>
-								<td>@task.Sprint.Title</td>
-								<td>@task.TaskType.Title</td>
-								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
-								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task" title="حذف"><i class="fa" aria-hidden="true">&#xf014;</i></button></td>
-								<td>
-									<button data-edit-task-id="@task.Id" class="btn btn-info btn-edit" title="ویرایش">
-										<i class='fa fa-edit' style="color:white"></i>
-									</button>
-								</td>
-							</tr>
+							@if (Model.CurrentUser.IsInRole(RoleTypes.Admin ) || 
+							(Model.CurrentUser.IsInRole(RoleTypes.User) &&
+									Model.CurrentUser.Claims
+									.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value == task.User.Id.ToString()))
+							{
+								<tr>
+									<td>
+										@(
+											index++
+											)
+									</td>
+									<td>@task.User.FullName</td>
+									<td>@task.StandardDuration</td>
+									<td>@task.PersianDate</td>
+									<td>@task.UnitName</td>
+									<td>@task.Sprint.Title</td>
+									<td>@task.TaskType.Title</td>
+									<td class="overflow-dotted" title="@task.Description">@task.Description</td>
+									<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task" title="حذف"><i class="fa" aria-hidden="true">&#xf014;</i></button></td>
+									<td>
+										<button data-edit-task-id="@task.Id" class="btn btn-info btn-edit" title="ویرایش">
+											<i class='fa fa-edit' style="color:white"></i>
+										</button>
+									</td>
+								</tr>
+							}
 						}
 
 					</tbody>
@@ -278,7 +289,7 @@
 
 
 @section Scripts {
-	
+
 	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
 	<script type="text/javascript" src="~/js/datatable.js"></script>
 	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
@@ -412,7 +423,7 @@
 			});
 
 
-			
+
 
 
 			$("#btn-delete-task").on("click", function () {
@@ -454,7 +465,7 @@
 			$("#modal").hide();
 		});
 
-		
+
 
 		function openModal(modalId) {
 			$("#" + modalId).show();
@@ -562,24 +573,24 @@
 
 
 
-														//function postdata() {
-														//	//change Age type to int
-														//	var person = { "FirstName": "Andrew", "LastName": "Lock", "Age": 31 };
-														//	$.ajax({
-														//		type: "POST",
-														//		url: "/UpdatePostBody?handler=Abc",
-														//		contentType: "application/json; charset=utf-8",
-														//		dataType: "json",
-														//		data: JSON.stringify(person),
-														//		headers: {
-														//			RequestVerificationToken:
-														//				$('input:hidden[name="__RequestVerificationToken"]').val()
-														//		},
-														//	})
-														//		.done(function (result) {
-														//			console.log(result);
-														//		});
-														//}
+																//function postdata() {
+																//	//change Age type to int
+																//	var person = { "FirstName": "Andrew", "LastName": "Lock", "Age": 31 };
+																//	$.ajax({
+																//		type: "POST",
+																//		url: "/UpdatePostBody?handler=Abc",
+																//		contentType: "application/json; charset=utf-8",
+																//		dataType: "json",
+																//		data: JSON.stringify(person),
+																//		headers: {
+																//			RequestVerificationToken:
+																//				$('input:hidden[name="__RequestVerificationToken"]').val()
+																//		},
+																//	})
+																//		.done(function (result) {
+																//			console.log(result);
+																//		});
+																//}
 
 	</script>
 }

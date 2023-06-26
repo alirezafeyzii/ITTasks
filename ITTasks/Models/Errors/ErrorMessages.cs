@@ -33,6 +33,16 @@
 		public static readonly string UserFullNameError = "نام کاربر نمی تواند خالی باشد";
 
 		/// <summary>
+		/// نام کاربری نمی تواند خالی باشد
+		/// </summary>
+		public static readonly string UserNameError = "نام کاربری نمی تواند خالی باشد";
+
+		/// <summary>
+		/// رمز نمی تواند خالی باشد
+		/// </summary>
+		public static readonly string PasswordError = "رمز نمی تواند خالی باشد";
+
+		/// <summary>
 		/// با موفقیت انجام شد		
 		/// </summary>
 		public static readonly string SuccessFul = "با موفقیت انجام شد";
@@ -71,5 +81,10 @@
 		/// اسپرینت یافت نشد
 		/// </summary>
 		public static readonly string SprintNotFound = "اسپرینت یافت نشد";
+
+		/// <summary>
+		/// نام کاربری یا رمز عبور اشتباه است
+		/// </summary>
+		public static readonly string SignInFaild = "نام کاربری یا رمز عبور اشتباه است";
 	}
 }

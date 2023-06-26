@@ -7,7 +7,7 @@ namespace ITTasks.Models.DTOS.Users
     {
         [Required(ErrorMessage = "وارد کردن نام الزامی است")]
         public string FullName { get; set; }
-		[Required(ErrorMessage = "وارد کردن نام کاربری الزامی است")]
+		[Required(ErrorMessage = "وارد کردن نام کاربری یا ایمیل یا تلفن همراه الزامی است")]
 		public string UserName { get; set; }
 		[Required(ErrorMessage = "وارد کردن ایمیل الزامی است")]
 		[DataType(DataType.EmailAddress)]

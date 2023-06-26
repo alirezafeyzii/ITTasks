@@ -63,6 +63,7 @@ namespace ITTasks.Services.Users
 					};
 				}
 
+
 				var userExists = await _userRepository.GetUserByNameAsync(user.FullName);
 				if (userExists != null)
 				{
@@ -79,8 +80,8 @@ namespace ITTasks.Services.Users
 				{
 					return new UserDto
 					{
-						ErrorCode = (int)ErrorCodes.DatabaseError,
-						ErrorMessage = ErrorMessages.DatabaseError
+						ErrorCode = (int)ErrorCodes.ConflictUser,
+						ErrorMessage = ErrorMessages.ConflictUser
 					};
 				}
 
@@ -180,6 +181,64 @@ namespace ITTasks.Services.Users
 					ErrorCode = (int)ErrorCodes.NoError,
 					ErrorMessage = ErrorMessages.NoError
 				};
+			}
+			catch (Exception)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.ServerError,
+					ErrorMessage = ErrorMessages.ServerError
+				};
+			}
+		}
+
+		public async Task<UserDto> GetUserForSignInAsync(string userName, string password)
+		{
+			try
+			{
+				if(userName is null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.UserNameError,
+						ErrorMessage = ErrorMessages.UserNameError
+					};
+				}
+
+				if (password is null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.PasswordError,
+						ErrorMessage = ErrorMessages.PasswordError
+					};
+				}
+
+				var user = await _userRepository.GetUserForSignInAsync(userName, password);
+				if(user is null)
+				{
+					return new UserDto
+					{
+						ErrorCode = (int)ErrorCodes.SignInFaild,
+						ErrorMessage = ErrorMessages.SignInFaild
+					};
+				}
+
+				var userInfo = new UserDto
+				{
+					Id = user.Id,
+					FullName = user.FullName,
+					UserName = user.UserName,
+					Email = user.Email,
+					PhoneNumber = user.PhoneNumber,
+					Token = user.Token,
+					Password = user.PasswordHash,
+					Role = user.Roles,
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
+				};
+
+				return userInfo;
 			}
 			catch (Exception)
 			{

@@ -15,7 +15,10 @@
 		ConflictUser,
 		ConflictTaskType,
 		TaskTypeNotFound,
-		SprintNotFound
+		SprintNotFound,
+		UserNameError,
+		PasswordError,
+		SignInFaild
 
 	}
 }

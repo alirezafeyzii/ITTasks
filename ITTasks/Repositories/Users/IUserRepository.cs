@@ -12,5 +12,6 @@ namespace ITTasks.Repositories.Users
         public Task<User> UpdateUserAsync(UserDto user);
         public Task<User> ChangeUserStatusAsync(Guid id, bool status);
         public Task<User> GetUserByNameAsync(string name);
+        public Task<User> GetUserForSignInAsync(string userNmae, string password);
 	}
 }
