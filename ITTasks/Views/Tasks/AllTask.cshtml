@@ -103,8 +103,6 @@
 							<th>اسپرینت</th>
 							<th>نوع تسک</th>
 							<th>توضیحات</th>
-							<th></th>
-							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -126,13 +124,12 @@
 								<td>@task.Sprint.Title</td>
 								<td>@task.TaskType.Title</td>
 								<td class="overflow-dotted" title="@task.Description">@task.Description</td>
-								<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task" title="حذف"><i class="fa" aria-hidden="true">&#xf014;</i></button></td>
-								@*<td><a href="/Tasks/UpdateTask?id=@task.Id"><button class="btn btn-info">ویرایش</button></a></td>*@
+								@*<td><button data-task-id="@task.Id" class="btn btn-danger btn-delete-task" title="حذف"><i class="fa" aria-hidden="true">&#xf014;</i></button></td>
 								<td>
 									<button data-edit-task-id="@task.Id" class="btn btn-info btn-edit" title="ویرایش">
 										<i class='fa fa-edit' style="color:white"></i>
 									</button>
-								</td>
+								</td>*@
 							</tr>
 						}
 

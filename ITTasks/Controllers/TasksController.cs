@@ -21,6 +21,8 @@ using System.Threading.Tasks;
 using ITTasks.Models.DTOS.Reports.Reporting;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
+using System.Security.Claims;
+using ITTasks.Statics.Entities.Roles;
 
 namespace ITTasks.Controllers
 {
@@ -52,6 +54,13 @@ namespace ITTasks.Controllers
 			var param = new TaskParameters { PageNumber = pageNumber };
 
 			var users = await _userService.GetAllActiveUsersAsync();
+
+			if (User.IsInRole(RoleTypes.User)) 
+			{
+				var checkClaim = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+				users = users.Where(u => u.Id.ToString() == checkClaim).ToList();
+			}
 
 			var allTaskType = await _taskTypeService.GetAllAsync();
 
@@ -391,6 +400,9 @@ namespace ITTasks.Controllers
 		[HttpPost("/Tasks/CreateTaskExcel")]
 		public async Task<IActionResult> CreateTaskExcel(IFormFile file)
 		{
+			if (file is null)
+				return BadRequest("فایلی وارد نشده");
+
 			if (file.ContentType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 				return BadRequest(ExcelErrors.ExcelErrorMessages.ImportedFileIsNotExcel);
 

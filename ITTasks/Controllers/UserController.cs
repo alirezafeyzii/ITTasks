@@ -1,12 +1,14 @@
 ﻿using ITTasks.Models.DTOS.Users;
 using ITTasks.Models.Errors;
 using ITTasks.Services.Users;
+using ITTasks.Statics.Entities.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITTasks.Controllers
 {
-    public class UserController : Controller
+	[Authorize(Roles = RoleTypes.Admin)]
+	public class UserController : Controller
     {
         private readonly IUserService _userService;
 
@@ -15,7 +17,6 @@ namespace ITTasks.Controllers
             _userService = userService;
         }
 
-        [Authorize]
         public IActionResult CreateUser()
         {
             return View();

@@ -47,7 +47,8 @@ namespace ITTasks.Repositories.Users
 			var conflict = await _dbContext.Users
 				.Where(u => u.NormalizedEmail == emailNormalize ||
 				u.NormalizedUserName == userNameNormalize || 
-				u.PhoneNumber == user.PhoneNumber)
+				u.PhoneNumber == user.PhoneNumber ||
+				u.FullName == user.FullName)
 				.FirstOrDefaultAsync();
 
 			if (conflict is not null)
@@ -107,7 +108,8 @@ namespace ITTasks.Repositories.Users
 				u.NormalizedEmail == userName.ToNormalize() ||
 				u.PhoneNumber == userName)
 				&& 
-				u.PasswordHash == password.Encrypt())
+				u.PasswordHash == password.Encrypt()
+				&& u.EmailConfirmed == true)
 				.SingleOrDefaultAsync();
 
 			if (user == null)
@@ -140,6 +142,41 @@ namespace ITTasks.Repositories.Users
 
 			return userForReturn.Entity;
 
+		}
+
+		public async Task<User> ConfirmEmailAsync(string userName, string token)
+		{
+			var user = await _dbContext.Users
+				.Include(u => u.Roles)
+				.Where(u => u.EmailConfirmed == false)
+				.SingleOrDefaultAsync(u => u.NormalizedUserName == userName.ToNormalize()
+				&& u.Token == token);
+
+			if (user is null)
+				return null;
+
+			user.EmailConfirmed = true;
+			var userAfterConfirmedEmail = _dbContext.Users.Update(user);
+
+			_dbContext.SaveChanges();
+
+			return userAfterConfirmedEmail.Entity;
+		}
+
+		public async Task<User> GetPasswordWithEmailOrUserNameOrPhoneNumberAsync(string email)
+		{
+			var user = await _dbContext.Users
+				.Where(x => x.EmailConfirmed == true)
+				.SingleOrDefaultAsync(x => x.NormalizedEmail == email.ToNormalize()
+				|| x.NormalizedUserName == email.Normalize()
+				|| x.PhoneNumber == email);
+
+			if (user is null)
+				return null;
+
+			 user.PasswordHash = user.PasswordHash.Decrypt();
+
+			return user;
 		}
 	}
 }

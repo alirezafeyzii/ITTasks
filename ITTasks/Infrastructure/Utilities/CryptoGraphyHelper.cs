@@ -27,7 +27,7 @@ namespace ITTasks.Infrastructure.Utilities
 			return clearText;
 		}
 
-		public static string Decrypt(string cipherText)
+		public static string Decrypt(this string cipherText)
 		{
 			string EncryptionKey = "MAKV2SPBNI99212";
 			byte[] cipherBytes = Convert.FromBase64String(cipherText);

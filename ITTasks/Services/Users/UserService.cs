@@ -74,6 +74,9 @@ namespace ITTasks.Services.Users
 					};
 				}
 
+				if (user.Token is null)
+					user.Token = GenerateToken();
+
 				var userFromRepo = await _userRepository.CreateUserAsync(user);
 
 				if (userFromRepo == null)
@@ -89,7 +92,12 @@ namespace ITTasks.Services.Users
 				{
 					Id = userFromRepo.Id,
 					FullName = userFromRepo.FullName,
+					UserName = userFromRepo.UserName,
+					Password = userFromRepo.PasswordHash,
 					IsActive = userFromRepo.IsActive,
+					Email = userFromRepo.Email,
+					Role = userFromRepo.Roles,
+					Token = userFromRepo.Token,
 					CreatedTime = userFromRepo.CreatedTime,
 					UpdatedTime = userFromRepo.UpdatedTime,
 					ErrorCode = (int)ErrorCodes.NoError,
@@ -364,6 +372,84 @@ namespace ITTasks.Services.Users
 					ErrorMessage = ErrorMessages.DatabaseError
 				};
 			}
+		}
+
+		public async Task<UserDto> ConfirmEmailAsync(string userName, string token)
+		{
+			if(userName is null || token is null)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.NullObjectError,
+					ErrorMessage = ErrorMessages.NullInputParameters
+				};
+			}
+
+			var userFromRepo = await _userRepository.ConfirmEmailAsync(userName, token);
+			if(userFromRepo is null)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.UserNotFound,
+					ErrorMessage = ErrorMessages.UserNotFound
+				};
+			}
+
+			return new UserDto
+			{
+				Id = userFromRepo.Id,
+				FullName = userFromRepo.FullName,
+				UserName = userFromRepo.UserName,
+				Role = userFromRepo.Roles,
+				ErrorCode = (int)ErrorCodes.NoError,
+				ErrorMessage = ErrorMessages.NoError
+			};
+
+		}
+
+		public async Task<UserDto> GetPasswordWithEmailOrUserNameOrPhoneNumber(string email)
+		{
+			if (email is null)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.NullObjectError,
+					ErrorMessage = ErrorMessages.NullInputParameters
+				};
+			}
+
+			var userFromRepo = await _userRepository.GetPasswordWithEmailOrUserNameOrPhoneNumberAsync(email);
+			if (userFromRepo is null)
+			{
+				return new UserDto
+				{
+					ErrorCode = (int)ErrorCodes.UserNotFound,
+					ErrorMessage = ErrorMessages.UserNotFound
+				};
+			}
+
+			return new UserDto
+			{
+				Email = userFromRepo.Email,
+				Password = userFromRepo.PasswordHash,
+				FullName = userFromRepo.FullName,
+				ErrorCode = (int)ErrorCodes.NoError,
+				ErrorMessage = ErrorMessages.NoError
+			};
+		}
+
+		private string GenerateToken()
+		{
+			var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+			var stringChars = new char[100];
+			var random = new Random();
+
+			for (int i = 0; i < stringChars.Length; i++)
+			{
+				stringChars[i] = chars[random.Next(chars.Length)];
+			}
+
+			return new(stringChars);
 		}
 	}
 }

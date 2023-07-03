@@ -18,7 +18,9 @@
 		SprintNotFound,
 		UserNameError,
 		PasswordError,
-		SignInFaild
+		SignInFaild,
+		EmailError,
+		PhoneNumber
 
 	}
 }

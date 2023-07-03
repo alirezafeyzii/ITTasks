@@ -8,11 +8,13 @@ using ITTasks.Repositories.Tasks;
 using ITTasks.Repositories.Tasks.TasksType;
 using ITTasks.Repositories.Users;
 using ITTasks.Services.Auth;
+using ITTasks.Services.Mails;
 using ITTasks.Services.Roles;
 using ITTasks.Services.Sprints;
 using ITTasks.Services.Tasks;
 using ITTasks.Services.Tasks.TasksType;
 using ITTasks.Services.Users;
+using ITTasks.Settings.Mail;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -20,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
 using System.Net;
 using System.Text;
 
@@ -56,6 +59,10 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+//builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+builder.Services.AddScoped<IMailService, MailService>();
+
 //builder.Services.AddAuthentication(options =>
 //{
 //	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,7 +84,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 //	});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-			.AddCookie(x => x.LoginPath = "/Auth/Login");
+			.AddCookie(x =>
+			{
+				x.LoginPath = "/Auth/Login";
+				x.AccessDeniedPath = "/Auth/AccessDenied";
+			});
+
 
 //builder.Services.AddAuthentication(option =>
 //{
@@ -121,7 +133,7 @@ app.UseCors(builder => builder
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
+app.UseRouting();	
 
 app.UseAuthentication();
 app.UseAuthorization();

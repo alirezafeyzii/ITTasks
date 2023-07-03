@@ -68,9 +68,9 @@
 		public static readonly string ConflictUser = "کاربر با این نام قبلا وارد شده است";
 
 		/// <summary>
-		/// کاربر با این نام قبلا وارد شده است
+		/// کاربر با این مشخصات قبلا وارد شده است
 		/// </summary>
-		public static readonly string ConflictTaskType = "نوع تسک با این نام قبلا وارد شده است";
+		public static readonly string ConflictTaskType = "نوع تسک با این مشخصات قبلا وارد شده است";
 
 		/// <summary>
 		/// نوع تسک یافت نشد
@@ -86,5 +86,15 @@
 		/// نام کاربری یا رمز عبور اشتباه است
 		/// </summary>
 		public static readonly string SignInFaild = "نام کاربری یا رمز عبور اشتباه است";
+
+		/// <summary>
+		/// مقدار ایمیل خالی است
+		/// </summary>
+		public static readonly string EmailError = "مقدار ایمیل خالی است";
+
+		/// <summary>
+		/// مقدار شماره تلفن خالی است
+		/// </summary>
+		public static readonly string PhoneNumberError = "مقدار شماره تلفن خالی است";
 	}
 }

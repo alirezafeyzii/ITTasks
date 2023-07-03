@@ -15,17 +15,27 @@ using ITTasks.Services.Auth;
 using ITTasks.Models.Errors;
 using ITTasks.Statics.Entities.Roles;
 using Azure.Core;
+using MimeKit.Cryptography;
+using ITTasks.Services.Mails;
+using ITTasks.Services.Users;
+using ITTasks.Models.DTOS.Emails;
 
 namespace ITTasks.Controllers
 {
+	[AllowAnonymous]
 	public class AuthController : Controller
 	{
 		private readonly IAuthService _authService;
+		private readonly IMailService _mailService;
+		private readonly IUserService _userService;
 
-		public AuthController(IAuthService authService)
+		public AuthController(IAuthService authService,
+			IMailService mailService,
+			IUserService userService)
 		{
 			_authService = authService;
-
+			_mailService = mailService;
+			_userService = userService;
 		}
 
 		public IActionResult Login()
@@ -42,29 +52,24 @@ namespace ITTasks.Controllers
 				return View(model);
 			}
 
-			var userFromservice = await _authService.SignInAsync(model);
-			if (userFromservice.ErrorCode != (int)ErrorCodes.NoError)
+			var userFromService = await _authService.SignInAsync(model);
+			if (userFromService.ErrorCode != (int)ErrorCodes.NoError)
 			{
-				ViewBag.ErrorMessage = userFromservice.ErrorMessage;
+				ViewBag.ErrorMessage = userFromService.ErrorMessage;
 				return View(model);
 			}
 
-			var expirationTime = DateTimeOffset.MinValue;
-
-			if (model.RememberMe)
-				expirationTime = DateTimeOffset.UtcNow.AddDays(30);
-
-			expirationTime = DateTimeOffset.UtcNow.AddDays(1);
-
-			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userFromservice.Principal, new AuthenticationProperties
+			var afterSetCookie = await SetCookie(userFromService.Principal,model.RememberMe);
+			if(afterSetCookie.ErrorCode != (int)ErrorCodes.NoError)
 			{
-				ExpiresUtc = expirationTime
-			});
+				ViewBag.ErrorMessage = afterSetCookie.ErrorMessage;
+				return View(model);
+			}
 
-			if (userFromservice.Principal.IsInRole(RoleTypes.Admin))
+			if (userFromService.Principal.IsInRole(RoleTypes.Admin))
 				return RedirectToAction("Panel", "Admin", null);
 
-			else if(userFromservice.Principal.IsInRole(RoleTypes.User))
+			else if(userFromService.Principal.IsInRole(RoleTypes.User))
 				return RedirectToAction("CreateTask", "Tasks", null);
 
 			else
@@ -98,14 +103,151 @@ namespace ITTasks.Controllers
 			//return View();
 		}
 
-		private void GetUserByToken(string token)
+		public IActionResult SignUp()
 		{
-			var tokenHandler = new JwtSecurityTokenHandler();
-			var readToken = tokenHandler.ReadJwtToken(token);
+			return View();
+		}
 
-			var userName = readToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-			var userRoles = readToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-			//var userId = readToken.Claims.FirstOrDefault(c => c.);
+		[HttpPost]
+		public async Task<IActionResult> SignUp(CreateUserDto request)
+		{
+			if (request is null)
+			{
+				ViewBag.ErrorMessage = "پارامتر های ورودی را به درستی وارد کنید";
+				return View(request);
+			}
+
+			var userFromService = await _authService.SignUpAsync(request);
+			if(userFromService.ErrorCode != (int)ErrorCodes.NoError)
+			{
+				ViewBag.ErrorMessage = userFromService.ErrorMessage;
+				return View(request);
+			}
+
+			var emailAfterSend = await _mailService.SendMailForConfirmedAsync(new Models.DTOS.Emails.MailRequestDto
+			{
+				ToEmail = userFromService.UserEmail,
+				UserName = userFromService.UserName,
+				UserFullName = userFromService.UserFullName,
+				Token = userFromService.UserToken,
+				Subject = "فعالسازی حساب کاربری"
+			});
+
+			if(emailAfterSend is true)
+				return RedirectToAction("BeforEmailConfirmed");
+
+			ViewBag.ErrorMessage = "مشکلی در ثبت نام رخ داده لطفا مجددا سعی کنید";
+			return View(request);
+		}
+
+		public async Task<IActionResult> ConfirmEmail(string userName, string token)
+		{
+
+			if (userName is null || token is null)
+				return BadRequest("error");
+
+			var userAfterConfirmedEmail = await _authService.EmailConfirmedAsync(userName, token);
+			if(userAfterConfirmedEmail.ErrorCode != (int)ErrorCodes.NoError)
+			{
+				return BadRequest($"error={userAfterConfirmedEmail.ErrorMessage}");
+			}
+
+			var afterSetCookie = await SetCookie(userAfterConfirmedEmail.Principal, false);
+			if (afterSetCookie.ErrorCode != (int)ErrorCodes.NoError)
+			{
+				return BadRequest($"error={afterSetCookie.ErrorMessage}");
+			}
+
+			if (userAfterConfirmedEmail.Principal.IsInRole(RoleTypes.Admin))
+				return RedirectToAction("Panel", "Admin", null);
+
+			else if (userAfterConfirmedEmail.Principal.IsInRole(RoleTypes.User))
+				return RedirectToAction("CreateTask", "Tasks", null);
+
+			else
+			{
+				return BadRequest("خطا ، لطفا پارامتر هارا چک کنید و سپس دوباره سعی کنید");
+			}
+
+		}
+
+		public IActionResult ForgetPassword()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> ForgetPassword(string email)
+		{
+			if (email is null)
+			{
+				ViewBag.ErrorMessage = "وارد کردن نام کاربری یا ایمیل یا شماره تلفن الزامی است ";
+				return View();
+			}
+
+			var userFromService = await _userService.GetPasswordWithEmailOrUserNameOrPhoneNumber(email);
+			if(userFromService.ErrorCode != (int)ErrorCodes.NoError)
+			{
+				ViewBag.ErrorMessage = userFromService.ErrorMessage;
+				return View();
+			}
+
+			var result = await _mailService.SendMailForgetPasswordAsync(new MailRequestDto
+			{
+				UserFullName = userFromService.FullName,
+				ToEmail = userFromService.Email,
+				Data = userFromService.Password,
+				Subject = "بازیابی رمز عبور"
+			});
+
+			ViewBag.Successful = "رمز عبور با ایمیل برای شما ارسال شد";
+			return View();
+		}
+
+		private async Task<AuthResponse> SetCookie(ClaimsPrincipal principal,bool rememberMe)
+		{
+			try
+			{
+				var expirationTime = DateTimeOffset.MinValue;
+				var isPersistent = false;
+				if (rememberMe)
+				{
+					expirationTime = DateTimeOffset.UtcNow.AddDays(30);
+					isPersistent = true;
+				}
+
+				expirationTime = DateTimeOffset.UtcNow.AddDays(1);
+
+				await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
+				{
+					ExpiresUtc = expirationTime,
+					IsPersistent = isPersistent
+				});
+
+				return new AuthResponse
+				{
+					ErrorCode = (int)ErrorCodes.NoError,
+					ErrorMessage = ErrorMessages.NoError
+				};
+			}
+			catch (Exception)
+			{
+				return new AuthResponse
+				{
+					ErrorCode = (int)ErrorCodes.ServerError,
+					ErrorMessage = ErrorMessages.ServerError
+				};
+			}
+		}
+
+		public IActionResult BeforEmailConfirmed()
+		{
+			return View();
+		}
+
+		public IActionResult AccessDenied()
+		{
+			return View();
 		}
 	}
 }

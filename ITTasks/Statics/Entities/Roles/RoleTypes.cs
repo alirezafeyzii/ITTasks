@@ -5,11 +5,11 @@
 		/// <summary>
 		/// نقش کاربر
 		/// </summary>
-		public static string User = "user";
+		public const string User = "user";
 
 		/// <summary>
 		/// نقش ادمین
 		/// </summary>
-		public static string Admin = "admin";
+		public const string Admin = "admin";
 	}
 }

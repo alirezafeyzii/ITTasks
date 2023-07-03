@@ -9,7 +9,8 @@ using ITTasks.Models.Parameters;
 using ITTasks.Repositories;
 using ITTasks.Repositories.Tasks;
 using ITTasks.Statics;
-
+using ITTasks.Statics.Entities.Roles;
+using Microsoft.AspNetCore.Authorization;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 
 namespace ITTasks.Services.Tasks
@@ -328,6 +329,7 @@ namespace ITTasks.Services.Tasks
 			};
 		}
 
+		[Authorize(Roles = RoleTypes.Admin)]
 		public async Task<GetTasksForReportingViewModel> GetTasksForReportingAsync(ReportingSearchDto searchRequest)
 		{
 

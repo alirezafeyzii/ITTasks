@@ -5,10 +5,13 @@ using ITTasks.Models.DTOS.Tasks;
 using ITTasks.Models.Errors;
 using ITTasks.Services.Sprints;
 using ITTasks.Services.Tasks;
+using ITTasks.Statics.Entities.Roles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ITTasks.Controllers
 {
+	[Authorize(Roles = RoleTypes.Admin)]
 	public class SprintsController : Controller
 	{
 		private readonly ISprintService _sprintService;

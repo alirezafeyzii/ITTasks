@@ -13,5 +13,7 @@ namespace ITTasks.Repositories.Users
         public Task<User> ChangeUserStatusAsync(Guid id, bool status);
         public Task<User> GetUserByNameAsync(string name);
         public Task<User> GetUserForSignInAsync(string userNmae, string password);
+        public Task<User> ConfirmEmailAsync(string userName, string token);
+        public Task<User> GetPasswordWithEmailOrUserNameOrPhoneNumberAsync(string email);
 	}
 }

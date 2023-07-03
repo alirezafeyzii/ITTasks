@@ -13,9 +13,12 @@ using OfficeOpenXml;
 using System.Drawing;
 using ChartDirector;
 using ITTasks.DataLayer.Entities;
+using Microsoft.AspNetCore.Authorization;
+using ITTasks.Statics.Entities.Roles;
 
 namespace ITTasks.Controllers
 {
+	[Authorize(Roles = RoleTypes.Admin)]
 	public class ReportsController : Controller
 	{
 		private readonly IUserService _userService;

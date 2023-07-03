@@ -3,95 +3,87 @@
 
 
 
-<form asp-action="Login" asp-controller="Auth" method="post">
-	<div class="mb-3">
-		<div class="mb-3 col-3">
-			<label class="form-label">نام کاربر </label>
-			<input asp-for="UserName" class="form-control">
-			<span asp-validation-for="UserName"></span>
+<div style="width:20%">
+    @*<ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="tab-login" data-mdb-toggle="pill" href="/Auth/Login" role="tab"
+               aria-controls="pills-login" aria-selected="true">Login</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="tab-register" data-mdb-toggle="pill" href="#pills-register" role="tab"
+               aria-controls="pills-register" aria-selected="false">Register</a>
+        </li>
+    </ul>*@
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+            <form asp-action="Login" asp-controller="Auth" method="post">
+
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="loginName">نام کاربری</label>
+                    <input asp-for="UserName" id="loginName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="loginPassword">رمز</label>
+                    <input type="password" asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <div class="form-check mb-3 mb-md-0">
+                            <label class="form-check-label" for="loginCheck"> مرا به خاطر بسپار </label>
+                            <input class="form-check-input" asp-for="RememberMe" type="checkbox" id="loginCheck" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <a href="/Auth/ForgetPassword">فراموشی رمز عبور؟</a>
+                    </div>
+                </div>
+
+                <input type="submit" class="btn btn-primary btn-block mb-4" value="ورود" />
+
+                <div class="text-center">
+                    <p>حساب کاربری ندارید؟ <a href="/Auth/SignUp">ثبت نام</a></p>
+                </div>
+                <br />
+                <span class="text-danger">@ViewBag.ErrorMessage</span>
+            </form>
+        </div>
+       
+    </div>
+</div>
+
+
+@*<div class="res">
+	<form asp-action="Login" asp-controller="Auth" method="post">
+		<div class="mb-3">
+			<div class="mb-3 col-3">
+				<label class="form-label">نام کاربر </label>
+				<input asp-for="UserName" class="form-control">
+				<span asp-validation-for="UserName" class="text-danger"></span>
+			</div>
 		</div>
-	</div>
-	<div class="mb-3">
-		<div class="mb-3 col-3">
-			<label class="form-label">رمز </label>
-			<input asp-for="Password" class="form-control">
-			<span asp-validation-for="Password"></span>
+		<div class="mb-3">
+			<div class="mb-3 col-3">
+				<label class="form-label">رمز </label>
+				<input asp-for="Password" class="form-control">
+				<span asp-validation-for="Password" class="text-danger"></span>
+			</div>
 		</div>
-	</div><div class="mb-3">
-		<div class="mb-3 col-3">
-			<label>مرا به خاطر بسپار </label>
-			<input asp-for="RememberMe" class="" id="flexCheckDefault">
-			<span asp-validation-for="RememberMe"></span>
+		<div class="mb-3">
+			<div class="mb-3 col-3">
+				<label asp-for="RememberMe" for="checkrememberme">مرا به خاطر بسپار </label>
+				<input asp-for="RememberMe" class="form-check-input" id="checkrememberme">
+			</div>
 		</div>
-	</div>
-	<input type="submit" class="btn btn-outline-success" value="ورود" /><br/>
-	<span class="text-danger">@ViewBag.ErrorMessage</span>
-</form>
+
+		<input type="submit" class="btn btn-primary" value="ورود" /><br />
+		<span class="text-danger">@ViewBag.ErrorMessage</span>
+	</form>
+</div>*@
 
 
-@section Scripts {
-	<script type="text/javascript" src="~/lib/datatables/datatables.min.js"></script>
-	<script type="text/javascript" src="~/js/datatable.js"></script>
-	<script src="~/lib/pwt.datepicker/dist/js/persian-date.min.js"></script>
-	<script src="~/lib/pwt.datepicker/dist/js/persian-datepicker.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="sweetalert2.min.js"></script>
-	<link rel="stylesheet" href="sweetalert2.min.css">
-
-
-
-	<script type="text/javascript">
-
-
-
-
-
-		$("#sub").on("click", function () {
-			let mydata = {
-				userName: $("#un").val(),
-				password: $("#pd").val()
-			}
-
-
-			let json = JSON.stringify(mydata);
-
-			$.ajax({
-				type: "POST",
-				url: "http://localhost:5000/api/Authenticate/Login",
-				data: json,
-				contentType: 'application/json; charset=utf-8',
-				success: function (data) {
-					console.log('loginsss')
-					tk(data.token)
-					//alert("wojej")
-				},
-				error: function (err) {
-					alert("error");
-				}
-			});
-		})
-
-
-		function tk(token) {
-			//$.ajax({
-			//	type: "GET",
-			//	//url: "/Auth/SignIn",
-			//	url: "/Auth/a",
-			//	contentType: 'application/json; charset=utf-8',
-			//	headers: { 'Authorization': 'Bearer ' + token }
-			//	,
-			//	success: function (tkn) {
-			//		console.log('login')
-
-			//		//window.open("https://localhost:7180/admin/panel")
-			//	},
-			//	error: function (dta){
-			//		console.log(dta);
-			//	}
-			//})
-
-			//window.location.replace("/admin/panel/" + token);
-			window.location.replace("http://localhost:5000/api/Authenticate/CheckTokenn/" + token);
-		}
-	</script>
-	}
