@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITTasks.Migrations
 {
     [DbContext(typeof(ITDbContext))]
-    [Migration("20230625104002_Add_Roles_Seed_Data")]
-    partial class Add_Roles_Seed_Data
+    [Migration("20230704061042_Add_Init")]
+    partial class Add_Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,24 +108,6 @@ namespace ITTasks.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ITRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a37de7f7-834b-43bc-99f1-7369b5cdf317"),
-                            CreateDate = new DateTime(2023, 6, 25, 14, 10, 2, 825, DateTimeKind.Local).AddTicks(6047),
-                            IsActive = true,
-                            Type = "admin",
-                            UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("7c290753-37f7-4887-b8eb-c93db8ed84b0"),
-                            CreateDate = new DateTime(2023, 6, 25, 14, 10, 2, 825, DateTimeKind.Local).AddTicks(6063),
-                            IsActive = true,
-                            Type = "user",
-                            UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("ITTasks.DataLayer.Entities.Sprint", b =>
@@ -190,8 +172,9 @@ namespace ITTasks.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PhoneNumber")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("INTEGER");

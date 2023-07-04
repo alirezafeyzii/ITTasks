@@ -14,7 +14,7 @@ namespace ITTasks.Infrastructure.Seeding.Roles
 
 		}
 
-		public async Task SeedingRoleAsync()
+		public async Task SeedRoleAsync()
 		{
 			var roleExists = await _roleRepository.GetAllRoles();
 

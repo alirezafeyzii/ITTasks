@@ -124,6 +124,18 @@
 
 @*<div id="editModal" class="w-100 position-absolute" style="height:700px;display:none;z-index:999">*@
 
+@if (User.IsInRole(RoleTypes.Admin))
+{
+	@section Admn{
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="گزارش گیری" asp-area="" asp-controller="Reports" asp-action="Reporting">گزارش گیری</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="پنل ادمین" asp-area="" asp-controller="Admin" asp-action="Panel">پنل ادمین</a>
+	</li>
+}
+}
+
 <div id="modal" class="modal">
 	<div class="modal-content-custom">
 		<span title="بستن" class="close">&times;</span>

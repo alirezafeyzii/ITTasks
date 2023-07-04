@@ -442,27 +442,27 @@ namespace ITTasks.Services.Tasks
 				return new ITTaskDto
 				{
 					Id = taskFromRepo.Id,
-					Sprint = new Models.DTOS.Sprints.SprintDto
-					{
-						Id = taskFromRepo.Sprint.Id,
-						Title = taskFromRepo.Sprint.Title,
-						StartDateTime = taskFromRepo.Sprint.StartDate,
-						EndDateTime = taskFromRepo.Sprint.EndDate,
-					},
-					TaskType = new Models.DTOS.Tasks.TasksType.ITTaskTypeDto
-					{
-						Id = taskFromRepo.ITTaskType.Id,
-						Title = taskFromRepo.ITTaskType.Title
-					},
-					User = new Models.DTOS.Users.UserDto
-					{
-						Id = taskFromRepo.User.Id,
-						FullName = taskFromRepo.User.UserName,
-					},
-					Description = taskFromRepo.Description,
-					Duration = taskFromRepo.Duration,
-					StandardDuration = DateTimeExtention.ToStandardTime(taskFromRepo.Duration),
-					PersianDate = DateTimeExtention.ToPersian(taskFromRepo.StartDate)
+					//Sprint = new Models.DTOS.Sprints.SprintDto
+					//{
+					//	Id = taskFromRepo.Sprint.Id,
+					//	Title = taskFromRepo.Sprint.Title,
+					//	StartDateTime = taskFromRepo.Sprint.StartDate,
+					//	EndDateTime = taskFromRepo.Sprint.EndDate,
+					//},
+					//TaskType = new Models.DTOS.Tasks.TasksType.ITTaskTypeDto
+					//{
+					//	Id = taskFromRepo.ITTaskType.Id,
+					//	Title = taskFromRepo.ITTaskType.Title
+					//},
+					////User = new Models.DTOS.Users.UserDto
+					////{
+					////	Id = taskFromRepo.User.Id,
+					////	FullName = taskFromRepo.User.UserName,
+					////},
+					//Description = taskFromRepo.Description,
+					//Duration = taskFromRepo.Duration,
+					//StandardDuration = DateTimeExtention.ToStandardTime(taskFromRepo.Duration),
+					//PersianDate = DateTimeExtention.ToPersian(taskFromRepo.StartDate)
 				};
 
 			}

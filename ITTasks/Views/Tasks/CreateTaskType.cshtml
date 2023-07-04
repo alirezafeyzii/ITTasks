@@ -1,5 +1,18 @@
 ﻿@using ITTasks.Models.DTOS.Tasks.TasksType;
+@using ITTasks.Statics.Entities.Roles;
 @model ITTaskTypeCreateDto
+
+@if (User.IsInRole(RoleTypes.Admin))
+{
+	@section Admn{
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="گزارش گیری" asp-area="" asp-controller="Reports" asp-action="Reporting">گزارش گیری</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="پنل ادمین" asp-area="" asp-controller="Admin" asp-action="Panel">پنل ادمین</a>
+	</li>
+}
+}
 
 <div class="row">
 	<div class="col-2" style="margin-right:50px">
@@ -16,8 +29,5 @@
 			<span class="text-danger">@ViewBag.ErrorMessage</span>
 		</form>
 	</div>
-
-
-
 </div>
 

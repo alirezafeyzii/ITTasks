@@ -2,6 +2,8 @@ using ITTasks.DataLayer;
 using ITTasks.Infrastructure.Migrate;
 using ITTasks.Infrastructure.Seeding.Roles;
 using ITTasks.Infrastructure.Seeding.SeedingConfig;
+using ITTasks.Infrastructure.Seeding.TaskTypes;
+using ITTasks.Infrastructure.Seeding.Users;
 using ITTasks.Repositories.Roles;
 using ITTasks.Repositories.Sprints;
 using ITTasks.Repositories.Tasks;
@@ -41,6 +43,8 @@ builder.Services.AddDbContext<ITDbContext>(option =>
 });
 
 builder.Services.AddTransient<RolesDataSeeding>();
+builder.Services.AddTransient<UsersDataSeeding>();
+builder.Services.AddTransient<TaskTypesSeeding>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -139,6 +143,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRoleDataSeed();
+
+app.UseUserDataSeed();
+
+app.UseTaskTypesDataSeed();
 
 app.UseMigration();
 

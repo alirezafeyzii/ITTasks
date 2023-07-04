@@ -302,10 +302,14 @@ namespace ITTasks.Controllers
 			var allTasks = await _taskService.GetAllTasksAsync(new TaskParameters { PageNumber = pageNumber });
 			return View(allTasks);
 		}
+
+		[Authorize(Roles = RoleTypes.Admin)]
 		public async Task<IActionResult> CreateTaskType()
 		{
 			return View();
 		}
+
+		[Authorize(Roles = RoleTypes.Admin)]
 		[HttpPost]
 		public async Task<IActionResult> CreateTaskType(ITTaskTypeCreateDto taskType)
 		{
@@ -377,6 +381,7 @@ namespace ITTasks.Controllers
 		}
 
 		//[HttpPost("/Tasks/DeleteTaskType/{id}")]
+		[Authorize(Roles = RoleTypes.Admin)]
 		public async Task<IActionResult> DeleteTaskType(Guid id)
 		{
 			var result = await _taskTypeService.DeleteAsync(id);

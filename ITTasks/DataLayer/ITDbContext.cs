@@ -8,7 +8,7 @@ namespace ITTasks.DataLayer
     {
         public ITDbContext(DbContextOptions options) : base(options) 
         {
-            Database.EnsureCreated();
+            Database.Migrate();
         }
 
         public DbSet<ITTask> Tasks { get; set; }

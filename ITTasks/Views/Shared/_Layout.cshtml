@@ -1,64 +1,70 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ITTasks</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ITTasks.styles.css" asp-append-version="true" />
-    <link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
-    <style>
-        body {
-            direction: rtl;
-        }
-    </style>
-    @await RenderSectionAsync("Styles", required: false)
-    @await RenderSectionAsync("ControlsSection", required: false)
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - ITTasks</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/ITTasks.styles.css" asp-append-version="true" />
+	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.min.css" rel="stylesheet" />
+	<style>
+		body {
+			direction: rtl;
+		}
+	</style>
+	@await RenderSectionAsync("Styles", required: false)
+	@await RenderSectionAsync("ControlsSection", required: false)
 </head>
 <body>
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"></a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Tasks" asp-action="CreateTask">ساخت تسک</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" title="گزارش گیری " asp-area="" asp-controller="Tasks" asp-action="AllTask">تسک ها</a>
-                            </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" title="تمامی تسک ها" asp-area="" asp-controller="Reports" asp-action="Reporting">گزارش گیری</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" title="دریافت فایل اکسل ساخت تسک" asp-area="" asp-controller="Tasks" asp-action="CreateTaskFile"> اکسل ساخت تسک</a>
-                        </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-    <div class="container-fluid">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+			<div class="container-fluid">
+				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"></a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1">
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Tasks" asp-action="CreateTask">ساخت تسک</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" title="تسک ها " asp-area="" asp-controller="Tasks" asp-action="AllTask">تسک ها</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" title="دریافت فایل اکسل ساخت تسک" asp-area="" asp-controller="Tasks" asp-action="CreateTaskFile"> اکسل ساخت تسک</a>
+						</li>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 1401 - <a href="https://m.mehbang.group/">مهبانگ</a> - ITTasks
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/sweetalert2/sweetalert.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+						<li class="nav-item">
+							<a class="nav-link text-dark" style="" title="ورود" asp-area="" asp-controller="Auth" asp-action="Login">ورود</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" title="ثبت نام" asp-area="" asp-controller="Auth" asp-action="SignUp"> ثبت نام</a>
+						</li>
+
+						@await RenderSectionAsync("Admn", required: false)
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="container-fluid">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+
+	<footer class="border-top footer text-muted">
+		<div class="container">
+			&copy; 1401 - <a href="https://m.mehbang.group/">مهبانگ</a> - ITTasks
+		</div>
+	</footer>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/lib/sweetalert2/sweetalert.min.js"></script>
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

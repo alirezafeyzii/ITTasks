@@ -1,4 +1,5 @@
-﻿@{
+﻿@using ITTasks.Statics.Entities.Roles;
+@{
 	ViewData["Title"] = "Panel";
 }
 
@@ -62,6 +63,19 @@
 	}
 </style>
 
+@if (User.IsInRole(RoleTypes.Admin))
+{
+	@section Admn{
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="گزارش گیری" asp-area="" asp-controller="Reports" asp-action="Reporting">گزارش گیری</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="پنل ادمین" asp-area="" asp-controller="Admin" asp-action="Panel">پنل ادمین</a>
+	</li>
+}
+}
+
+
 <div class="container-fluid pt-4  d-flex flex-row flex-wrap">
 	<div class="col-2">
 		<nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white border-radius-5 vh-30 ">
@@ -74,31 +88,33 @@
 					<i class="fas fa-chart-line fa-fw me-3"></i><span>واحد</span>
 					</a>*@
 					@*<div class="dropdown">
-						<span class="btn btn-secondary dropdown-toggle list-group-item list-group-item-action py-2 ripple" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-							مدیریت کاربر
-						</span>
-						<ul class="dropdown-menu">
-							<li><span class="dropdown-item" id="users">تمامی کاربرها</span></li>
-							<li><a class="dropdown-item" href="#">Another action</a></li>
-							<li><a class="dropdown-item" href="#">Something else here</a></li>
-						</ul>
+					<span class="btn btn-secondary dropdown-toggle list-group-item list-group-item-action py-2 ripple" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+					مدیریت کاربر
+					</span>
+					<ul class="dropdown-menu">
+					<li><span class="dropdown-item" id="users">تمامی کاربرها</span></li>
+					<li><a class="dropdown-item" href="#">Another action</a></li>
+					<li><a class="dropdown-item" href="#">Something else here</a></li>
+					</ul>
 					</div>*@
-					<label class="small opacity-75 my-1">مدیریت کاربر</label>
-					<div class="mb-3">
-					<select class="form-select" >
-						<option id="users" class="dropdown-item 1">
-							ساخت کاربر
-						</option>
-					</select>
+					<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle list-group-item list-group-item-action py-2 ripple" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							مدیریت کاربر
+						</button>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="/User/GetAllUsers">کاربران/ویرایش کاربر</a></li>
+							@*<li><a class="dropdown-item" href="#">Another action</a></li>
+							<li><a class="dropdown-item" href="#">Something else here</a></li>*@
+						</ul>
 					</div>
 					<div class="dropdown">
 						<button class="btn btn-secondary dropdown-toggle list-group-item list-group-item-action py-2 ripple" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 							مدیریت اسپرینت
 						</button>
 						<ul class="dropdown-menu">
-							<li><a class="dropdown-item" href="#">Action</a></li>
-							<li><a class="dropdown-item" href="#">Another action</a></li>
-							<li><a class="dropdown-item" href="#">Something else here</a></li>
+							<li><a class="dropdown-item" href="/Sprints/CreateSprint">ساخت اسپرینت</a></li>
+							@*<li><a class="dropdown-item" href="#">Another action</a></li>
+							<li><a class="dropdown-item" href="#">Something else here</a></li>*@
 						</ul>
 					</div>
 					<div class="dropdown">
@@ -106,9 +122,9 @@
 							مدیریت نوع تسک
 						</button>
 						<ul class="dropdown-menu">
-							<li><a class="dropdown-item" href="#">Action</a></li>
-							<li><a class="dropdown-item" href="#">Another action</a></li>
-							<li><a class="dropdown-item" href="#">Something else here</a></li>
+							<li><a class="dropdown-item" href="/Tasks/CreateTaskType">ساخت نوع تسک</a></li>
+							@*<li><a class="dropdown-item" href="#">Another action</a></li>
+							<li><a class="dropdown-item" href="#">Something else here</a></li>*@
 						</ul>
 					</div>
 				</div>
@@ -148,7 +164,7 @@
 			});
 		})
 
-		$("#users").on("click", function(){
+		$("#users").on("click", function () {
 			$.ajax({
 				type: "GET",
 				url: "/User/GetAllUsers",
@@ -162,7 +178,7 @@
 				}
 			});
 		})
-		
+
 		$(document).ready(function () {
 
 

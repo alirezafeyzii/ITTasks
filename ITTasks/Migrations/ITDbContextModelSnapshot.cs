@@ -105,24 +105,6 @@ namespace ITTasks.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ITRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("d8b99c9e-518d-4ffd-b211-cd36fc2afb22"),
-                            CreateDate = new DateTime(2023, 6, 25, 15, 54, 4, 321, DateTimeKind.Local).AddTicks(3971),
-                            IsActive = true,
-                            Type = "admin",
-                            UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("3f6b797b-9a31-4956-9250-6698e335ba97"),
-                            CreateDate = new DateTime(2023, 6, 25, 15, 54, 4, 321, DateTimeKind.Local).AddTicks(3987),
-                            IsActive = true,
-                            Type = "user",
-                            UpdateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("ITTasks.DataLayer.Entities.Sprint", b =>

@@ -116,7 +116,6 @@ namespace ITTasks.Repositories.Tasks
 			public int SumOfTimeOfTasks { get; set; }
 		}
 
-
 		public class ReportViewModel
 		{
 			public List<UsersReportViewModel> UsersReport { get; set; }
@@ -124,7 +123,6 @@ namespace ITTasks.Repositories.Tasks
 			public List<TaskTypesReportViewModel> TaskTypesReport { get; set; }
 			public List<UnitsReportViewModel> UnitsReport { get; set; }
 		}
-
 
 		public async Task<ReportViewModel> GetAllForReportingAsync()
 		{
@@ -178,8 +176,6 @@ namespace ITTasks.Repositories.Tasks
 
 			return result;
 		}
-
-
 
 		public  ReportViewModel GetReportForTasks(List<ITTaskDto> tasks)
 		{
@@ -342,8 +338,18 @@ namespace ITTasks.Repositories.Tasks
 			taskFromDb.StartDate = modifiedDate;
 			taskFromDb.Description = task.Description;
 			taskFromDb.UnitId = task.UnitId;
+			taskFromDb.UserId = task.UserId;
 
 			var taskAfterUpdated = _dbContext.Tasks.Update(taskFromDb);
+
+			//var tsk4Service = await _dbContext.Tasks
+			//	.Include(t => t.User)
+			//	.SingleOrDefaultAsync(t => t.Id == taskAfterUpdated.Entity.Id
+			//	&&
+			//	t.UserId == taskFromDb.UserId);
+
+			//taskAfterUpdated.Entity.User = tsk4Service.User;
+
 			if (taskAfterUpdated.Entity == null)
 				return null;
 

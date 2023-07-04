@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ITTasks.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_Users_And_Role_After_Drop_DB : Migration
+    public partial class Add_Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Roles",
+                name: "ITRoles",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -23,7 +23,7 @@ namespace ITTasks.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
+                    table.PrimaryKey("PK_ITRoles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -70,7 +70,7 @@ namespace ITTasks.Migrations
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     NormalizedEmail = table.Column<string>(type: "TEXT", nullable: false),
                     EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    PhoneNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: false),
                     PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
                     PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
                     Token = table.Column<string>(type: "TEXT", nullable: false),
@@ -80,9 +80,9 @@ namespace ITTasks.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId",
+                        name: "FK_Users_ITRoles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "Roles",
+                        principalTable: "ITRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -162,7 +162,7 @@ namespace ITTasks.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "ITRoles");
         }
     }
 }

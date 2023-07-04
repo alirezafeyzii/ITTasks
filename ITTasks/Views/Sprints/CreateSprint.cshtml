@@ -1,4 +1,5 @@
 ﻿@using ITTasks.Models.DTOS.Sprints;
+@using ITTasks.Statics.Entities.Roles;
 @model CreateSprintDto
 
 
@@ -7,6 +8,19 @@
 	<link href="~/lib/pwt.datepicker/dist/css/persian-datepicker.css" rel="stylesheet" />
 	<link rel="stylesheet" href="~/lib/data-tables/datatables.min.css" asp-append-version="true" />
 }
+
+@if (User.IsInRole(RoleTypes.Admin))
+{
+	@section Admn{
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="گزارش گیری" asp-area="" asp-controller="Reports" asp-action="Reporting">گزارش گیری</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link text-dark" title="پنل ادمین" asp-area="" asp-controller="Admin" asp-action="Panel">پنل ادمین</a>
+	</li>
+}
+}
+
 <div class="row">
 <div class="col-2" style="margin-right:50px">
 	<form asp-action="CreateSprint" asp-controller="Sprints" method="post">
